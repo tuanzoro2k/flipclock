@@ -3,8 +3,21 @@ window.addEventListener('DOMContentLoaded', () => {
   const status = $('tm-status')
   let session = null
   let alarming = false
+  let ringTimer = null
 
   const MIN = 60000
+  const RING_MS = 5000
+
+  // Xoa moi dau vet cua lan bao dang keu. Bat buoc phai huy ringTimer o day:
+  // neu khong, cai setTimeout cua lan bao TRUOC se no muon va dismiss() nham
+  // phase/phien SAU, lam pomodoro nhay coc mot chang.
+  function clearAlarm() {
+    clearTimeout(ringTimer)
+    ringTimer = null
+    alarming = false
+    document.body.classList.remove('alarming')
+    window.stopChime?.()
+  }
 
   function readSpec(mode) {
     if (mode === 'countdown') {
@@ -41,9 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function stop() {
     session = null
-    alarming = false
-    document.body.classList.remove('alarming')
-    window.stopChime?.()
+    clearAlarm()
     // ponytail: khong gan window.app.override = null o day — closure ben
     // duoi da tra ve null khi !session roi; gan lai se pha huy vinh vien
     // override that su, khien o lat khong bao gio hien so dem nua.
@@ -54,6 +65,9 @@ window.addEventListener('DOMContentLoaded', () => {
     alarming = true
     document.body.classList.add('alarming')
     window.playChime?.()
+    // Keu RING_MS roi tu tat va sang phase ke tiep, khong can bam gi.
+    // Bam Escape/Space/click van tat som duoc.
+    ringTimer = setTimeout(dismiss, RING_MS)
   }
 
   function label() {
@@ -92,9 +106,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function dismiss() {
     if (!alarming) return
-    alarming = false
-    document.body.classList.remove('alarming')
-    window.stopChime?.()
+    clearAlarm()
     const next = advance(session, Date.now())
     if (next.finished) stop()
     else session = next
@@ -109,9 +121,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Ponytail: xoa het trang thai bao chuong con dang keu truoc khi nhan
     // phien moi — khong thi tick()/override deu bo qua vi con `alarming`,
     // va Escape sau do se advance() nham phien MOI roi huy no ngay lap tuc.
-    alarming = false
-    document.body.classList.remove('alarming')
-    window.stopChime?.()
+    clearAlarm()
     session = createSession(spec, Date.now())
   })
   document.addEventListener('keydown', e => {
