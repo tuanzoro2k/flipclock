@@ -75,12 +75,24 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
   pointer-events: none;
 }
 #cards[data-suffix=""]::before { content: none; }
+#panel label[hidden] { display: none; }
+#panel .sep { width: 1px; height: 20px; background: rgba(255,255,255,.3); }
+#panel input[type=number] { width: 52px; }
+#panel button { padding: 5px 12px; border: 0; border-radius: 6px; cursor: pointer; }
+#tm-status {
+  margin-top: 16px; text-align: center; font-size: 26px;
+  color: var(--label); text-shadow: var(--glow); letter-spacing: .08em;
+}
+#tm-status:empty { display: none; }
+body.alarming #cards { animation: blink .6s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .3; } }
 </style>
 </head>
 <body>
   <div id="stage">
     <div id="cards"></div>
     <div id="date" hidden></div>
+    <div id="tm-status"></div>
   </div>
 
   <div id="panel">
@@ -95,6 +107,24 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
     </label>
     <label>Cỡ <input type="range" id="opt-scale" min="50" max="100"></label>
     <label>Sáng <input type="range" id="opt-brightness" min="50" max="100"></label>
+    <span class="sep"></span>
+    <label>Chế độ
+      <select id="tm-mode">
+        <option value="off">Tắt</option>
+        <option value="countdown">Đếm ngược</option>
+        <option value="pomodoro">Pomodoro</option>
+        <option value="alarm">Hẹn giờ</option>
+      </select>
+    </label>
+    <label id="tm-countdown-box" hidden>Phút <input type="number" id="tm-minutes" min="1" max="600" value="10"></label>
+    <label id="tm-alarm-box" hidden>Lúc <input type="time" id="tm-at" value="07:30"></label>
+    <label id="tm-pomo-box" hidden>
+      Focus <input type="number" id="tm-focus" min="1" max="180" value="25">
+      Nghỉ <input type="number" id="tm-break" min="1" max="60" value="5">
+      Dài <input type="number" id="tm-long" min="1" max="60" value="15">
+      Chu kỳ <input type="number" id="tm-cycles" min="1" max="12" value="4">
+    </label>
+    <button id="tm-start">Bắt đầu</button>
   </div>
 
   <script src="music/tracks.js"></script>
@@ -102,5 +132,6 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
   <script src="timer.js"></script>
   <script src="audio.js"></script>
   <script src="settings.js"></script>
+  <script src="timer-ui.js"></script>
 </body>
 </html>

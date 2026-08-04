@@ -1,0 +1,109 @@
+window.addEventListener('DOMContentLoaded', () => {
+  const $ = id => document.getElementById(id)
+  const status = $('tm-status')
+  let session = null
+  let alarming = false
+
+  const MIN = 60000
+
+  function readSpec(mode) {
+    if (mode === 'countdown') {
+      return { mode, durationMs: Number($('tm-minutes').value) * MIN }
+    }
+    if (mode === 'alarm') {
+      const [hh, mm] = $('tm-at').value.split(':').map(Number)
+      return { mode, hh, mm }
+    }
+    return {
+      mode: 'pomodoro',
+      focusMs: Number($('tm-focus').value) * MIN,
+      breakMs: Number($('tm-break').value) * MIN,
+      longBreakMs: Number($('tm-long').value) * MIN,
+      cycles: Number($('tm-cycles').value)
+    }
+  }
+
+  function showBoxes() {
+    const mode = $('tm-mode').value
+    $('tm-countdown-box').hidden = mode !== 'countdown'
+    $('tm-alarm-box').hidden = mode !== 'alarm'
+    $('tm-pomo-box').hidden = mode !== 'pomodoro'
+    $('tm-start').hidden = mode === 'off'
+  }
+
+  function stop() {
+    session = null
+    alarming = false
+    document.body.classList.remove('alarming')
+    window.stopChime?.()
+    // ponytail: khong gan window.app.override = null o day — closure ben
+    // duoi da tra ve null khi !session roi; gan lai se pha huy vinh vien
+    // override that su, khien o lat khong bao gio hien so dem nua.
+    status.textContent = ''
+  }
+
+  function fire() {
+    alarming = true
+    document.body.classList.add('alarming')
+    window.playChime?.()
+  }
+
+  function label() {
+    if (!session) return ''
+    if (session.mode === 'pomodoro') {
+      const name = { focus: 'FOCUS', break: 'NGHỈ', longBreak: 'NGHỈ DÀI' }[session.phase]
+      return `● ${name} ${session.cycle}/${session.cycles}`
+    }
+    if (session.mode === 'alarm') {
+      return `⏰ ${$('tm-at').value}`
+    }
+    return '● ĐẾM NGƯỢC'
+  }
+
+  // Alarm KHONG chiem o lat — o lat van hien gio that.
+  window.app.override = () => {
+    if (!session || alarming || session.mode === 'alarm') return null
+    const left = remaining(session.endAt, Date.now())
+    const text = formatDuration(left)
+    return text.split(':')
+  }
+
+  function tick() {
+    if (!session || alarming) return
+    const now = Date.now()
+    if (remaining(session.endAt, now) > 0) {
+      const left = session.mode === 'alarm' ? ` · còn ${formatDuration(remaining(session.endAt, now))}` : ''
+      status.textContent = label() + left
+      return
+    }
+    fire()
+    status.textContent = label() + ' · HẾT GIỜ'
+  }
+
+  function dismiss() {
+    if (!alarming) return
+    alarming = false
+    document.body.classList.remove('alarming')
+    window.stopChime?.()
+    const next = advance(session, Date.now())
+    if (next.finished) stop()
+    else session = next
+  }
+
+  $('tm-mode').addEventListener('change', () => { showBoxes(); stop() })
+  $('tm-start').addEventListener('click', () => {
+    const mode = $('tm-mode').value
+    if (mode === 'off') return stop()
+    session = createSession(readSpec(mode), Date.now())
+  })
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') dismiss()
+    if (e.key === ' ' && session) { e.preventDefault(); dismiss() }
+  })
+  document.addEventListener('click', e => {
+    if (alarming && !e.target.closest('#panel')) dismiss()
+  })
+
+  showBoxes()
+  setInterval(tick, 250)
+})
