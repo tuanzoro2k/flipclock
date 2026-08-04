@@ -23,9 +23,7 @@ function nextAlarmTime(hh, mm, now) {
 }
 
 function phaseDuration(spec, phase) {
-  if (phase === 'focus') return spec.focusMs
-  if (phase === 'break') return spec.breakMs
-  return spec.longBreakMs
+  return phase === 'focus' ? spec.focusMs : spec.breakMs
 }
 
 function createSession(spec, now) {
@@ -48,16 +46,16 @@ function createSession(spec, now) {
 function advance(session, now) {
   if (session.mode !== 'pomodoro') return { ...session, finished: true }
 
+  // Nghi la vach ngan GIUA hai phien focus, nen phien focus cuoi ket thuc ca bo
+  // — khong co lan nghi treo lung o cuoi.
   if (session.phase === 'focus') {
-    const last = session.cycle === session.cycles
-    const phase = last ? 'longBreak' : 'break'
+    if (session.cycle === session.cycles) return { ...session, finished: true }
     return {
       ...session,
-      phase,
-      endAt: now + phaseDuration(session.spec, phase)
+      phase: 'break',
+      endAt: now + phaseDuration(session.spec, 'break')
     }
   }
-  if (session.phase === 'longBreak') return { ...session, finished: true }
 
   const cycle = session.cycle + 1
   return {

@@ -34,7 +34,7 @@ test('formatDuration lam tron len de dem nguoc khong nhay som', () => {
 const { createSession, advance } = require('./timer.js')
 
 const T0 = new Date(2026, 0, 15, 10, 0, 0).getTime()
-const POMO = { mode: 'pomodoro', focusMs: 1500000, breakMs: 300000, longBreakMs: 900000, cycles: 4 }
+const POMO = { mode: 'pomodoro', focusMs: 1500000, breakMs: 300000, cycles: 4 }
 
 test('countdown dat moc bang now cong thoi luong', () => {
   const s = createSession({ mode: 'countdown', durationMs: 60000 }, T0)
@@ -69,15 +69,22 @@ test('pomodoro chay dung thu tu 4 chu ky roi ket thuc', () => {
   let s = createSession(POMO, T0)
   const seen = []
   let now = T0
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 7; i++) {
     seen.push(s.phase + s.cycle)
     now = s.endAt
     s = advance(s, now)
   }
   assert.deepStrictEqual(seen, [
     'focus1', 'break1', 'focus2', 'break2',
-    'focus3', 'break3', 'focus4', 'longBreak4'
+    'focus3', 'break3', 'focus4'
   ])
+  assert.strictEqual(s.finished, true)
+})
+
+test('pomodoro mot chu ky la mot phien focus roi het, khong co nghi treo', () => {
+  let s = createSession({ ...POMO, cycles: 1 }, T0)
+  assert.strictEqual(s.phase, 'focus')
+  s = advance(s, s.endAt)
   assert.strictEqual(s.finished, true)
 })
 

@@ -31,7 +31,6 @@ window.addEventListener('DOMContentLoaded', () => {
       mode: 'pomodoro',
       focusMs: Number($('tm-focus').value) * MIN,
       breakMs: Number($('tm-break').value) * MIN,
-      longBreakMs: Number($('tm-long').value) * MIN,
       cycles: Number($('tm-cycles').value)
     }
   }
@@ -41,7 +40,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function validSpec(spec) {
     if (spec.mode === 'countdown') return spec.durationMs > 0
     if (spec.mode === 'alarm') return Number.isInteger(spec.hh) && Number.isInteger(spec.mm)
-    return spec.cycles >= 1 && spec.focusMs > 0 && spec.breakMs > 0 && spec.longBreakMs > 0
+    return spec.cycles >= 1 && spec.focusMs > 0 && spec.breakMs > 0
   }
 
   function showBoxes() {
@@ -73,7 +72,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function label() {
     if (!session) return ''
     if (session.mode === 'pomodoro') {
-      const name = { focus: 'FOCUS', break: 'NGHỈ', longBreak: 'NGHỈ DÀI' }[session.phase]
+      const name = session.phase === 'focus' ? 'FOCUS' : 'NGHỈ'
       return `● ${name} ${session.cycle}/${session.cycles}`
     }
     if (session.mode === 'alarm') {
