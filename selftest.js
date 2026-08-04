@@ -31,4 +31,61 @@ test('formatDuration lam tron len de dem nguoc khong nhay som', () => {
   assert.strictEqual(formatDuration(2001), '00:03')
 })
 
+const { createSession, advance } = require('./timer.js')
+
+const T0 = new Date(2026, 0, 15, 10, 0, 0).getTime()
+const POMO = { mode: 'pomodoro', focusMs: 1500000, breakMs: 300000, longBreakMs: 900000, cycles: 4 }
+
+test('countdown dat moc bang now cong thoi luong', () => {
+  const s = createSession({ mode: 'countdown', durationMs: 60000 }, T0)
+  assert.strictEqual(s.endAt, T0 + 60000)
+  assert.strictEqual(s.mode, 'countdown')
+  assert.strictEqual(s.finished, false)
+})
+
+test('countdown advance la ket thuc', () => {
+  const s = advance(createSession({ mode: 'countdown', durationMs: 60000 }, T0), T0 + 60000)
+  assert.strictEqual(s.finished, true)
+})
+
+test('alarm gio chua toi thi roi vao hom nay', () => {
+  const s = createSession({ mode: 'alarm', hh: 23, mm: 0 }, T0)
+  assert.strictEqual(s.endAt, new Date(2026, 0, 15, 23, 0, 0).getTime())
+})
+
+test('alarm gio da qua thi roi vao ngay mai', () => {
+  const s = createSession({ mode: 'alarm', hh: 7, mm: 30 }, T0)
+  assert.strictEqual(s.endAt, new Date(2026, 0, 16, 7, 30, 0).getTime())
+})
+
+test('pomodoro bat dau bang focus chu ky 1', () => {
+  const s = createSession(POMO, T0)
+  assert.strictEqual(s.phase, 'focus')
+  assert.strictEqual(s.cycle, 1)
+  assert.strictEqual(s.endAt, T0 + 1500000)
+})
+
+test('pomodoro chay dung thu tu 4 chu ky roi ket thuc', () => {
+  let s = createSession(POMO, T0)
+  const seen = []
+  let now = T0
+  for (let i = 0; i < 8; i++) {
+    seen.push(s.phase + s.cycle)
+    now = s.endAt
+    s = advance(s, now)
+  }
+  assert.deepStrictEqual(seen, [
+    'focus1', 'break1', 'focus2', 'break2',
+    'focus3', 'break3', 'focus4', 'longBreak4'
+  ])
+  assert.strictEqual(s.finished, true)
+})
+
+test('pomodoro moc ke tiep tinh tu thoi diem advance chu khong cong don', () => {
+  const s0 = createSession(POMO, T0)
+  // nguoi dung bam tat chuong tre 10 giay
+  const s1 = advance(s0, s0.endAt + 10000)
+  assert.strictEqual(s1.endAt, s0.endAt + 10000 + 300000)
+})
+
 console.log(`\n${passed} passed`)
