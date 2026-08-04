@@ -61,9 +61,18 @@ window.addEventListener('DOMContentLoaded', () => {
   function load(i, autoplay) {
     index = (i + tracks.length) % tracks.length
     select.value = index
+    document.getElementById('mu-play').title = ''
     audio.src = 'music/' + tracks[index]
     if (autoplay) audio.play().then(syncPlayButton, syncPlayButton)
   }
+
+  // File thieu hoac sai ten (loi thuong gap nhat lan dau) -> im lang theo dung
+  // spec ("khong bao loi on ao"), nhung khong duoc vo hinh: dong bo lai nut va
+  // bao qua title (hover) thay vi console error do nguoi dung khong thay.
+  audio.addEventListener('error', () => {
+    syncPlayButton()
+    document.getElementById('mu-play').title = 'Không phát được: music/' + tracks[index]
+  })
 
   document.getElementById('mu-play').addEventListener('click', () => {
     // Trinh duyet chan autoplay: lan dau bat buoc phai co cu bam nay.
