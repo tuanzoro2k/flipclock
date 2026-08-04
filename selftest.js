@@ -106,6 +106,17 @@ test('key chua ton tai thi tra ve mac dinh chu khong phai gia tri nho nhat', () 
   assert.strictEqual(store.get('brightness'), 100)
 })
 
+test('key chua ton tai voi mac dinh la boolean thi tra ve dung boolean', () => {
+  const store = createStore(fakeStorage(), DEFAULTS)
+  assert.strictEqual(store.get('showSeconds'), true)
+  assert.strictEqual(store.get('showDate'), false)
+})
+
+test('key chua ton tai voi mac dinh la string thi tra ve dung string', () => {
+  const store = createStore(fakeStorage(), DEFAULTS)
+  assert.strictEqual(store.get('theme'), 'classic')
+})
+
 test('doc dung kieu boolean', () => {
   const store = createStore(fakeStorage({ showSeconds: 'false', showDate: 'true' }), DEFAULTS)
   assert.strictEqual(store.get('showSeconds'), false)
