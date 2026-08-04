@@ -34,7 +34,16 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     showSeconds: true, showDate: false, hour24: false,
     theme: 'classic', scale: 100, brightness: 100
   }
-  const store = createStore(localStorage, DEFAULTS)
+  // Ponytail: mot so cau hinh file:// / trinh duyet chan site data khien
+  // truy cap localStorage throw ngay tu dau — fallback qua Map trong bo nho
+  // de dong ho van chay, chi mat kha nang luu lai cai dat.
+  let ls
+  try { ls = localStorage; ls.getItem('x') }
+  catch (e) {
+    const m = new Map()
+    ls = { getItem: k => m.has(k) ? m.get(k) : null, setItem: (k, v) => m.set(k, v) }
+  }
+  const store = createStore(ls, DEFAULTS)
   const stage = document.getElementById('stage')
   const cards = document.getElementById('cards')
   const dateEl = document.getElementById('date')
