@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flip Clock</title>
+<style>
+:root[data-theme="classic"] {
+  --bg: #000; --card: #1a1a1a; --card2: #141414;
+  --digit: #ccc; --label: #888; --glow: none; --line: #000;
+}
+:root[data-theme="hacker"] {
+  --bg: #000; --card: #001a00; --card2: #001200;
+  --digit: #00ff41; --label: #00a02a; --glow: 0 0 12px #00ff41; --line: #000;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+body {
+  background: var(--bg); overflow: hidden; height: 100vh;
+  font-family: "Arial Black", "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 900; cursor: default;
+}
+#stage {
+  position: absolute; inset: 0; margin: auto;
+  width: max-content; height: max-content;
+  transform-origin: center center;
+}
+#cards { display: flex; gap: 24px; }
+.card {
+  position: relative; width: 300px; height: 400px;
+  perspective: 900px; border-radius: 24px; overflow: hidden;
+  background: var(--card);
+}
+.half {
+  position: absolute; left: 0; width: 100%; height: 50%;
+  overflow: hidden; backface-visibility: hidden;
+}
+.half.top    { top: 0;    border-bottom: 1px solid var(--line); background: var(--card); }
+.half.bottom { bottom: 0; background: var(--card2); }
+.half span {
+  position: absolute; left: 0; width: 100%; height: 400px;
+  line-height: 400px; text-align: center; font-size: 300px;
+  color: var(--digit); text-shadow: var(--glow);
+}
+.half.top    span { top: 0; }
+.half.bottom span { bottom: 0; }
+.half.flap { z-index: 2; }
+.half.top.flap    { transform-origin: bottom center; }
+.half.bottom.flap { transform-origin: top center; transform: rotateX(90deg); }
+.card:not(.flipping) .half.flap { display: none; }
+.card.flipping .half.top.flap    { animation: flipTop    .15s linear forwards; }
+.card.flipping .half.bottom.flap { animation: flipBottom .15s linear .15s forwards; }
+@keyframes flipTop    { to { transform: rotateX(-90deg); } }
+@keyframes flipBottom { to { transform: rotateX(0deg); } }
+#date {
+  margin-top: 28px; text-align: center; font-size: 34px;
+  color: var(--label); text-shadow: var(--glow); letter-spacing: .06em;
+}
+#date[hidden] { display: none; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div id="cards"></div>
+    <div id="date" hidden></div>
+  </div>
+
+  <script src="music/tracks.js"></script>
+  <script src="clock.js"></script>
+  <script src="timer.js"></script>
+  <script src="audio.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
