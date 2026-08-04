@@ -27,3 +27,109 @@ function createStore(storage, defaults) {
 }
 
 if (typeof module !== 'undefined') module.exports = { createStore }
+
+// Phan duoi day chi chay trong trinh duyet.
+if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', () => {
+  const DEFAULTS = {
+    showSeconds: true, showDate: false, hour24: false,
+    theme: 'classic', scale: 100, brightness: 100
+  }
+  const store = createStore(localStorage, DEFAULTS)
+  const stage = document.getElementById('stage')
+  const cards = document.getElementById('cards')
+  const dateEl = document.getElementById('date')
+
+  let digits = []
+  let digitCount = 0
+
+  // Task 6 gan ham vao day de chiem o lat. Tra ve mang chuoi hoac null.
+  window.app = { store, override: null }
+
+  function fit() {
+    const s = store.get('scale') / 100
+    const pad = 40
+    const k = Math.min(
+      (window.innerWidth - pad) / stage.offsetWidth,
+      (window.innerHeight - pad) / stage.offsetHeight
+    )
+    stage.style.transform = `scale(${Math.min(k, 3) * s})`
+    stage.style.filter = `brightness(${store.get('brightness')}%)`
+  }
+
+  function clockDigits(now) {
+    let h = now.getHours()
+    let suffix = null
+    if (!store.get('hour24')) {
+      suffix = h >= 12 ? 'PM' : 'AM'
+      h = h % 12 || 12
+    }
+    const out = [
+      store.get('hour24') ? String(h).padStart(2, '0') : String(h),
+      String(now.getMinutes()).padStart(2, '0')
+    ]
+    if (store.get('showSeconds')) out.push(String(now.getSeconds()).padStart(2, '0'))
+    return { values: out, suffix }
+  }
+
+  function render() {
+    const now = new Date()
+    const forced = window.app.override && window.app.override(now)
+    const { values, suffix } = forced ? { values: forced, suffix: null } : clockDigits(now)
+
+    if (values.length !== digitCount) {
+      digitCount = values.length
+      digits = buildDigits(cards, digitCount)
+    }
+    values.forEach((v, i) => setDigit(digits[i], v))
+
+    cards.dataset.suffix = suffix || ''
+    const showDate = store.get('showDate')
+    dateEl.hidden = !showDate
+    if (showDate) {
+      dateEl.textContent = now.toLocaleDateString(undefined, {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      })
+    }
+    fit()
+  }
+
+  function bind(id, key, prop, after) {
+    const el = document.getElementById(id)
+    el[prop] = store.get(key)
+    el.addEventListener(prop === 'checked' ? 'change' : 'input', () => {
+      store.set(key, el[prop])
+      if (after) after()
+      render()
+    })
+  }
+
+  bind('opt-seconds', 'showSeconds', 'checked')
+  bind('opt-date', 'showDate', 'checked')
+  bind('opt-24h', 'hour24', 'checked')
+  bind('opt-theme', 'theme', 'value', applyTheme)
+  bind('opt-scale', 'scale', 'value')
+  bind('opt-brightness', 'brightness', 'value')
+
+  function applyTheme() {
+    document.documentElement.dataset.theme = store.get('theme')
+  }
+
+  let hideTimer = null
+  document.addEventListener('mousemove', () => {
+    document.body.classList.add('hover')
+    clearTimeout(hideTimer)
+    hideTimer = setTimeout(() => document.body.classList.remove('hover'), 3000)
+  })
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen()
+      else document.documentElement.requestFullscreen()
+    }
+  })
+
+  window.addEventListener('resize', fit)
+  applyTheme()
+  render()
+  setInterval(render, 250)
+})

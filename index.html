@@ -56,12 +56,45 @@ body {
   color: var(--label); text-shadow: var(--glow); letter-spacing: .06em;
 }
 #date[hidden] { display: none; }
+#panel {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  max-width: 92vw; padding: 10px 16px; border-radius: 12px;
+  background: rgba(128,128,128,.22); backdrop-filter: blur(10px);
+  color: #fff; font: 400 13px/1 system-ui, sans-serif; z-index: 100;
+  transition: opacity .2s, visibility .2s;
+}
+body:not(.hover) #panel { opacity: 0; visibility: hidden; }
+#panel label { display: flex; gap: 6px; align-items: center; }
+#panel input[type=range] { width: 90px; }
+#cards { position: relative; }
+#cards::before {
+  content: attr(data-suffix);
+  position: absolute; left: 22px; top: 300px; z-index: 3;
+  font-size: 40px; color: var(--label); text-shadow: var(--glow);
+  pointer-events: none;
+}
+#cards[data-suffix=""]::before { content: none; }
 </style>
 </head>
 <body>
   <div id="stage">
     <div id="cards"></div>
     <div id="date" hidden></div>
+  </div>
+
+  <div id="panel">
+    <label><input type="checkbox" id="opt-seconds"> Giây</label>
+    <label><input type="checkbox" id="opt-date"> Ngày tháng</label>
+    <label><input type="checkbox" id="opt-24h"> 24 giờ</label>
+    <label>Theme
+      <select id="opt-theme">
+        <option value="classic">Classic</option>
+        <option value="hacker">Hacker</option>
+      </select>
+    </label>
+    <label>Cỡ <input type="range" id="opt-scale" min="50" max="100"></label>
+    <label>Sáng <input type="range" id="opt-brightness" min="50" max="100"></label>
   </div>
 
   <script src="music/tracks.js"></script>
