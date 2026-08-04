@@ -94,6 +94,12 @@ window.addEventListener('DOMContentLoaded', () => {
   $('tm-start').addEventListener('click', () => {
     const mode = $('tm-mode').value
     if (mode === 'off') return stop()
+    // Ponytail: xoa het trang thai bao chuong con dang keu truoc khi nhan
+    // phien moi — khong thi tick()/override deu bo qua vi con `alarming`,
+    // va Escape sau do se advance() nham phien MOI roi huy no ngay lap tuc.
+    alarming = false
+    document.body.classList.remove('alarming')
+    window.stopChime?.()
     session = createSession(readSpec(mode), Date.now())
   })
   document.addEventListener('keydown', e => {
