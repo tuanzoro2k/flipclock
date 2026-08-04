@@ -8,8 +8,12 @@ cần server, không cần mạng.
 Giây (bật/tắt) · ngày tháng (bật/tắt) · 12/24h · theme Classic và Hacker ·
 cỡ chữ và độ sáng · đếm ngược · pomodoro · hẹn giờ báo · nhạc nền.
 
-Rê chuột để hiện panel cài đặt. Phím tắt: `F` fullscreen, `Esc` tắt chuông,
-`Space` bỏ qua phase đang chạy.
+Rê chuột để hiện panel cài đặt. Phím tắt: `F` fullscreen, `Esc` hoặc `Space`
+tắt chuông đang kêu.
+
+Đồng hồ tính giờ chuông dựa trên mốc thời gian tuyệt đối nên không bị trôi,
+nhưng nếu để tab chạy nền quá lâu (trình duyệt đóng băng tab), chuông có thể
+reo trễ — đây là giới hạn chung của mọi bộ đếm giờ chạy trên trình duyệt.
 
 ## Thêm nhạc nền
 
