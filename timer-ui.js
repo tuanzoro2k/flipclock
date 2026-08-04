@@ -23,6 +23,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Ponytail: mot guard duy nhat o diem goi, thay vi vha ba nhanh rai rac —
+  // HTML min/max chi la advisory, nguoi dung xoa trang o bat ky truong nao.
+  function validSpec(spec) {
+    if (spec.mode === 'countdown') return spec.durationMs > 0
+    if (spec.mode === 'alarm') return Number.isInteger(spec.hh) && Number.isInteger(spec.mm)
+    return spec.cycles >= 1 && spec.focusMs > 0 && spec.breakMs > 0 && spec.longBreakMs > 0
+  }
+
   function showBoxes() {
     const mode = $('tm-mode').value
     $('tm-countdown-box').hidden = mode !== 'countdown'
@@ -61,8 +69,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Alarm KHONG chiem o lat — o lat van hien gio that.
+  // Khi dang alarming o mode khac, endAt da qua nen remaining() tu nhien la 0
+  // -> "00:00" dung nghia dung yen, khong nhay ve gio that giua luc nhap nhay.
   window.app.override = () => {
-    if (!session || alarming || session.mode === 'alarm') return null
+    if (!session || session.mode === 'alarm') return null
     const left = remaining(session.endAt, Date.now())
     const text = formatDuration(left)
     return text.split(':')
@@ -94,13 +104,15 @@ window.addEventListener('DOMContentLoaded', () => {
   $('tm-start').addEventListener('click', () => {
     const mode = $('tm-mode').value
     if (mode === 'off') return stop()
+    const spec = readSpec(mode)
+    if (!validSpec(spec)) { status.textContent = 'Giá trị không hợp lệ'; return }
     // Ponytail: xoa het trang thai bao chuong con dang keu truoc khi nhan
     // phien moi — khong thi tick()/override deu bo qua vi con `alarming`,
     // va Escape sau do se advance() nham phien MOI roi huy no ngay lap tuc.
     alarming = false
     document.body.classList.remove('alarming')
     window.stopChime?.()
-    session = createSession(readSpec(mode), Date.now())
+    session = createSession(spec, Date.now())
   })
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') dismiss()
