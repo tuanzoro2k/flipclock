@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let index = 0
 
   const select = document.getElementById('mu-track')
-  const controls = ['mu-play', 'mu-next', 'mu-track', 'mu-vol']
+  const controls = ['mu-play', 'mu-next', 'mu-track', 'mu-del', 'mu-vol']
 
   function refillSelect() {
     select.length = 0
@@ -82,6 +82,8 @@ window.addEventListener('DOMContentLoaded', () => {
   // spec ("khong bao loi on ao"), nhung khong duoc vo hinh: dong bo lai nut va
   // bao qua title (hover) thay vi console error do nguoi dung khong thay.
   audio.addEventListener('error', () => {
+    // Danh sach rong: src vua bi go ra co chu y, khong phai file hong.
+    if (!tracks.length) return
     syncPlayButton()
     document.getElementById('mu-play').title = 'Không phát được: ' + (tracks[index] || {}).label
   })
@@ -93,8 +95,28 @@ window.addEventListener('DOMContentLoaded', () => {
     tracks.push(...picked)
     refillSelect()
     load(firstNew, true)
-    // ponytail: khong revokeObjectURL — cac URL nay phai song het phien de con
-    // phat lai / next qua lai. Trinh duyet thu hoi khi dong tab.
+    // Reset input: chon lai DUNG file vua xoa se khong ban 'change' neu value
+    // con nguyen, va nut se im lang khong lam gi.
+    e.target.value = ''
+  })
+
+  document.getElementById('mu-del').addEventListener('click', () => {
+    if (!tracks.length) return
+    const [gone] = tracks.splice(index, 1)
+    // Chi thu hoi blob cua file nguoi dung chon; track kem theo repo la duong dan thuong.
+    if (gone.src.startsWith('blob:')) URL.revokeObjectURL(gone.src)
+
+    const conPhat = !audio.paused
+    refillSelect()
+    if (!tracks.length) {
+      audio.pause()
+      audio.removeAttribute('src')
+      audio.load()
+      return
+    }
+    // index dang tro vao vi tri cua bai vua xoa = bai ke tiep; load() tu cuon
+    // ve 0 neu vua xoa bai cuoi.
+    load(index, conPhat)
   })
 
   document.getElementById('mu-play').addEventListener('click', () => {
