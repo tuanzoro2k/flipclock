@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Flip Clock</title>
 <style>
+:root {
+  /* Geometry doc goc: fs la font-size mot o so. Moi thu khac (kich thuoc
+     the, chieu cao/line-height so, do rong nhan AM/PM...) tinh theo fs
+     bang calc() de khong bao gio lech nhau nua. */
+  --fs: 300px;
+  /* Do rong can cho 2 ky tu, do bang canvas.measureText('88') voi font
+     900 var(--fs) "Arial Black" tren Chrome thuc te: ~1.334em (2 x 0.667em
+     mot chu so). Doi font thi PHAI do lai so nay. */
+  --card-w: calc(var(--fs) * 1.334 + var(--fs) * 0.3);
+  --card-h: calc(var(--fs) * 4 / 3);
+  --gap: calc(var(--fs) * 0.08);
+}
 :root[data-theme="classic"] {
   --bg: #000; --card: #1a1a1a; --card2: #141414;
   --digit: #ccc; --label: #888; --glow: none; --line: #000;
@@ -24,9 +36,9 @@ body {
   width: max-content; height: max-content;
   transform-origin: center center;
 }
-#cards { display: flex; gap: 24px; }
+#cards { display: flex; gap: var(--gap); }
 .card {
-  position: relative; width: 300px; height: 400px;
+  position: relative; width: var(--card-w); height: var(--card-h);
   perspective: 900px; border-radius: 24px; overflow: hidden;
   background: var(--card);
 }
@@ -37,8 +49,8 @@ body {
 .half.top    { top: 0;    border-bottom: 1px solid var(--line); background: var(--card); }
 .half.bottom { bottom: 0; background: var(--card2); }
 .half span {
-  position: absolute; left: 0; width: 100%; height: 400px;
-  line-height: 400px; text-align: center; font-size: 300px;
+  position: absolute; left: 0; width: 100%; height: var(--card-h);
+  line-height: var(--card-h); text-align: center; font-size: var(--fs);
   color: var(--digit); text-shadow: var(--glow);
 }
 .half.top    span { top: 0; }
@@ -70,8 +82,8 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
 #cards { position: relative; }
 #cards::before {
   content: attr(data-suffix);
-  position: absolute; left: 22px; top: 300px; z-index: 3;
-  font-size: 40px; color: var(--label); text-shadow: var(--glow);
+  position: absolute; left: calc(var(--fs) * 0.0733); top: calc(var(--card-h) * 0.75); z-index: 3;
+  font-size: calc(var(--fs) * 0.1333); color: var(--label); text-shadow: var(--glow);
   pointer-events: none;
 }
 #cards[data-suffix=""]::before { content: none; }
