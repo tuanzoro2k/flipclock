@@ -41,15 +41,26 @@ window.stopChime = stopChime
 
 // Nhac nen
 window.addEventListener('DOMContentLoaded', () => {
-  const tracks = window.TRACKS || []
-  const box = document.getElementById('music-box')
-  if (!tracks.length) { box.hidden = true; return }
+  // Mot track la { label, src }. Nguon co hai kieu:
+  //   - ten file trong window.TRACKS -> src la duong dan tuong doi 'music/<ten>'
+  //   - file nguoi dung chon tu may  -> src la blob: URL, khong roi khoi may ho
+  // Nho vay ban deploy cong khai khong phai kem theo file nhac nao.
+  const stripExt = name => name.replace(/\.[^.]+$/, '')
+  const tracks = (window.TRACKS || []).map(n => ({ label: stripExt(n), src: 'music/' + n }))
 
   const audio = new Audio()
   let index = 0
 
   const select = document.getElementById('mu-track')
-  tracks.forEach((t, i) => select.add(new Option(t.replace(/\.[^.]+$/, ''), i)))
+  const controls = ['mu-play', 'mu-next', 'mu-track', 'mu-vol']
+
+  function refillSelect() {
+    select.length = 0
+    tracks.forEach((t, i) => select.add(new Option(t.label, i)))
+    // Khong con danh sach rong -> hien dan dieu khien
+    const has = tracks.length > 0
+    controls.forEach(id => { document.getElementById(id).hidden = !has })
+  }
 
   // audio.src = ... tu dat audio.paused = true ma khong ban su kien 'pause',
   // va play() bi tu choi cung khong ban 'pause' -> nut co the ket qua sai trang thai
@@ -59,10 +70,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function load(i, autoplay) {
+    if (!tracks.length) return
     index = (i + tracks.length) % tracks.length
     select.value = index
     document.getElementById('mu-play').title = ''
-    audio.src = 'music/' + tracks[index]
+    audio.src = tracks[index].src
     if (autoplay) audio.play().then(syncPlayButton, syncPlayButton)
   }
 
@@ -71,7 +83,18 @@ window.addEventListener('DOMContentLoaded', () => {
   // bao qua title (hover) thay vi console error do nguoi dung khong thay.
   audio.addEventListener('error', () => {
     syncPlayButton()
-    document.getElementById('mu-play').title = 'Không phát được: music/' + tracks[index]
+    document.getElementById('mu-play').title = 'Không phát được: ' + (tracks[index] || {}).label
+  })
+
+  document.getElementById('mu-pick').addEventListener('change', e => {
+    const picked = [...e.target.files].map(f => ({ label: stripExt(f.name), src: URL.createObjectURL(f) }))
+    if (!picked.length) return
+    const firstNew = tracks.length
+    tracks.push(...picked)
+    refillSelect()
+    load(firstNew, true)
+    // ponytail: khong revokeObjectURL — cac URL nay phai song het phien de con
+    // phat lai / next qua lai. Trinh duyet thu hoi khi dong tab.
   })
 
   document.getElementById('mu-play').addEventListener('click', () => {
@@ -87,5 +110,6 @@ window.addEventListener('DOMContentLoaded', () => {
   audio.addEventListener('pause', () => { document.getElementById('mu-play').textContent = '▶' })
 
   audio.volume = 0.5
+  refillSelect()
   load(0, false)
 })

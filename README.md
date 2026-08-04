@@ -15,13 +15,21 @@ tắt chuông đang kêu.
 nhưng nếu để tab chạy nền quá lâu (trình duyệt đóng băng tab), chuông có thể
 reo trễ — đây là giới hạn chung của mọi bộ đếm giờ chạy trên trình duyệt.
 
-## Thêm nhạc nền
+## Nhạc nền
 
-1. Chép file mp3 vào thư mục `music/`.
-2. Mở `music/tracks.js`, thêm tên file vào mảng `window.TRACKS`.
-3. F5.
+Bấm **🎵 Chọn nhạc** trong panel rồi chọn file từ máy. Chọn được nhiều file một
+lúc. File không đi đâu cả — trình duyệt phát thẳng từ máy bạn, không upload lên
+server nào, kể cả khi bạn đang mở bản chạy trên web.
 
-Chỉ dùng nhạc bạn có quyền sử dụng. Repo không kèm sẵn file nhạc nào.
+Lần đầu phải bấm ▶ một cái: trình duyệt chặn tự động phát nhạc, không lách được.
+
+Trình duyệt không cho web nhớ đường dẫn file, nên **mở lại trang thì phải chọn
+lại nhạc**. Đây là giới hạn bảo mật, không phải thiếu sót.
+
+Nếu bạn tự chạy bản của mình và muốn có sẵn nhạc không cần chọn: chép file vào
+`music/` rồi thêm tên file vào mảng `window.TRACKS` trong `music/tracks.js`.
+Chỉ làm vậy với nhạc bạn có quyền sử dụng — và nhớ rằng nếu deploy công khai thì
+đó là phát tán công khai. Repo này không kèm sẵn file nhạc nào.
 
 Lần đầu phải bấm ▶ một cái — trình duyệt chặn tự động phát nhạc, không lách được.
 
