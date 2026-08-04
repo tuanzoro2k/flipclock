@@ -44,11 +44,13 @@ function setDigit(digit, text) {
   s.topFlap.firstChild.textContent = old
   s.bottomFlap.firstChild.textContent = text
 
+  clearTimeout(digit.timer) // huy lan lat truoc neu dang chay do, tranh no ghi de len lan nay
+
   digit.el.classList.remove('flipping')
   void digit.el.offsetWidth // ep trinh duyet tinh lai de animation chay lai
   digit.el.classList.add('flipping')
 
-  setTimeout(() => {
+  digit.timer = setTimeout(() => {
     s.bottomStatic.firstChild.textContent = text
     digit.el.classList.remove('flipping')
   }, FLIP_MS)
