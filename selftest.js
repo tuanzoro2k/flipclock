@@ -88,4 +88,51 @@ test('pomodoro moc ke tiep tinh tu thoi diem advance chu khong cong don', () => 
   assert.strictEqual(s1.endAt, s0.endAt + 10000 + 300000)
 })
 
+const { createStore } = require('./settings.js')
+
+const DEFAULTS = { showSeconds: true, showDate: false, hour24: false, theme: 'classic', scale: 100, brightness: 100 }
+
+function fakeStorage(seed = {}) {
+  const map = new Map(Object.entries(seed))
+  return {
+    getItem: k => (map.has(k) ? map.get(k) : null),
+    setItem: (k, v) => map.set(k, String(v))
+  }
+}
+
+test('key chua ton tai thi tra ve mac dinh chu khong phai gia tri nho nhat', () => {
+  const store = createStore(fakeStorage(), DEFAULTS)
+  assert.strictEqual(store.get('scale'), 100)
+  assert.strictEqual(store.get('brightness'), 100)
+})
+
+test('doc dung kieu boolean', () => {
+  const store = createStore(fakeStorage({ showSeconds: 'false', showDate: 'true' }), DEFAULTS)
+  assert.strictEqual(store.get('showSeconds'), false)
+  assert.strictEqual(store.get('showDate'), true)
+})
+
+test('doc dung kieu so', () => {
+  const store = createStore(fakeStorage({ scale: '75' }), DEFAULTS)
+  assert.strictEqual(store.get('scale'), 75)
+})
+
+test('gia tri so hong thi lui ve mac dinh', () => {
+  const store = createStore(fakeStorage({ scale: 'abc' }), DEFAULTS)
+  assert.strictEqual(store.get('scale'), 100)
+})
+
+test('chuoi rong khong bi hieu nham la thieu key', () => {
+  const store = createStore(fakeStorage({ theme: '' }), DEFAULTS)
+  assert.strictEqual(store.get('theme'), '')
+})
+
+test('set roi get lai ra dung gia tri', () => {
+  const store = createStore(fakeStorage(), DEFAULTS)
+  store.set('scale', 80)
+  store.set('showDate', true)
+  assert.strictEqual(store.get('scale'), 80)
+  assert.strictEqual(store.get('showDate'), true)
+})
+
 console.log(`\n${passed} passed`)
