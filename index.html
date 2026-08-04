@@ -86,6 +86,7 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
 #tm-status:empty { display: none; }
 body.alarming #cards { animation: blink .6s steps(1) infinite; }
 @keyframes blink { 50% { opacity: .3; } }
+#music-box[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -125,6 +126,13 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
       Chu kỳ <input type="number" id="tm-cycles" min="1" max="12" value="4">
     </label>
     <button id="tm-start">Bắt đầu</button>
+    <span class="sep"></span>
+    <label id="music-box">
+      <button id="mu-play">▶</button>
+      <button id="mu-next">▶▶</button>
+      <select id="mu-track"></select>
+      <input type="range" id="mu-vol" min="0" max="100" value="50">
+    </label>
   </div>
 
   <script src="music/tracks.js"></script>
