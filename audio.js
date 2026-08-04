@@ -1,6 +1,7 @@
 // Chuong sinh bang Web Audio, khong can file am thanh.
 let chimeCtx = null
 let chimeLoop = null
+let activeOscillators = []
 
 function beep(ctx, at, freq = 880, dur = 0.15) {
   const osc = ctx.createOscillator()
@@ -11,6 +12,8 @@ function beep(ctx, at, freq = 880, dur = 0.15) {
   osc.connect(gain).connect(ctx.destination)
   osc.start(at)
   osc.stop(at + dur)
+  activeOscillators.push(osc)
+  osc.onended = () => { activeOscillators = activeOscillators.filter(o => o !== osc) }
 }
 
 function playChime() {
@@ -28,6 +31,9 @@ function playChime() {
 function stopChime() {
   clearInterval(chimeLoop)
   chimeLoop = null
+  // Cat ngay cac beep da len lich (osc.stop() ngoai tuong lai chi don gian dung ngay).
+  activeOscillators.forEach(o => { try { o.stop() } catch (e) {} })
+  activeOscillators = []
 }
 
 window.playChime = playChime
@@ -45,16 +51,23 @@ window.addEventListener('DOMContentLoaded', () => {
   const select = document.getElementById('mu-track')
   tracks.forEach((t, i) => select.add(new Option(t.replace(/\.[^.]+$/, ''), i)))
 
+  // audio.src = ... tu dat audio.paused = true ma khong ban su kien 'pause',
+  // va play() bi tu choi cung khong ban 'pause' -> nut co the ket qua sai trang thai
+  // that neu chi dua vao su kien. Dong bo lai tu audio.paused sau khi play() ket thuc.
+  function syncPlayButton() {
+    document.getElementById('mu-play').textContent = audio.paused ? '▶' : '❚❚'
+  }
+
   function load(i, autoplay) {
     index = (i + tracks.length) % tracks.length
     select.value = index
     audio.src = 'music/' + tracks[index]
-    if (autoplay) audio.play().catch(() => {})
+    if (autoplay) audio.play().then(syncPlayButton, syncPlayButton)
   }
 
   document.getElementById('mu-play').addEventListener('click', () => {
     // Trinh duyet chan autoplay: lan dau bat buoc phai co cu bam nay.
-    if (audio.paused) audio.play().catch(() => {})
+    if (audio.paused) audio.play().then(syncPlayButton, syncPlayButton)
     else audio.pause()
   })
   document.getElementById('mu-next').addEventListener('click', () => load(index + 1, true))
