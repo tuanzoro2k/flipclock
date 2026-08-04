@@ -90,7 +90,7 @@ test('pomodoro moc ke tiep tinh tu thoi diem advance chu khong cong don', () => 
 
 const { createStore } = require('./settings.js')
 
-const DEFAULTS = { showSeconds: true, showDate: false, hour24: false, theme: 'classic', scale: 100, brightness: 100 }
+const DEFAULTS = { showSeconds: true, showDate: false, theme: 'classic', scale: 100, brightness: 100 }
 
 function fakeStorage(seed = {}) {
   const map = new Map(Object.entries(seed))

@@ -5,7 +5,7 @@ cần server, không cần mạng.
 
 ## Tính năng
 
-Giây (bật/tắt) · ngày tháng (bật/tắt) · 12/24h · theme Classic và Hacker ·
+Giây (bật/tắt) · ngày tháng (bật/tắt) · giờ 24h · theme Classic và Hacker ·
 cỡ chữ và độ sáng · đếm ngược · pomodoro · hẹn giờ báo · nhạc nền.
 
 Rê chuột để hiện panel cài đặt. Phím tắt: `F` fullscreen, `Esc` hoặc `Space`

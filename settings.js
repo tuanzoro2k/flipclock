@@ -31,7 +31,7 @@ if (typeof module !== 'undefined') module.exports = { createStore }
 // Phan duoi day chi chay trong trinh duyet.
 if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', () => {
   const DEFAULTS = {
-    showSeconds: true, showDate: false, hour24: false,
+    showSeconds: true, showDate: false,
     theme: 'classic', scale: 100, brightness: 100
   }
   // Ponytail: mot so cau hinh file:// / trinh duyet chan site data khien
@@ -66,24 +66,18 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   }
 
   function clockDigits(now) {
-    let h = now.getHours()
-    let suffix = null
-    if (!store.get('hour24')) {
-      suffix = h >= 12 ? 'PM' : 'AM'
-      h = h % 12 || 12
-    }
     const out = [
-      store.get('hour24') ? String(h).padStart(2, '0') : String(h),
+      String(now.getHours()).padStart(2, '0'),
       String(now.getMinutes()).padStart(2, '0')
     ]
     if (store.get('showSeconds')) out.push(String(now.getSeconds()).padStart(2, '0'))
-    return { values: out, suffix }
+    return out
   }
 
   function render() {
     const now = new Date()
     const forced = window.app.override && window.app.override(now)
-    const { values, suffix } = forced ? { values: forced, suffix: null } : clockDigits(now)
+    const values = forced || clockDigits(now)
 
     if (values.length !== digitCount) {
       digitCount = values.length
@@ -91,7 +85,6 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     }
     values.forEach((v, i) => setDigit(digits[i], v))
 
-    cards.dataset.suffix = suffix || ''
     const showDate = store.get('showDate')
     dateEl.hidden = !showDate
     if (showDate) {
@@ -114,7 +107,6 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
 
   bind('opt-seconds', 'showSeconds', 'checked')
   bind('opt-date', 'showDate', 'checked')
-  bind('opt-24h', 'hour24', 'checked')
   bind('opt-theme', 'theme', 'value', applyTheme)
   bind('opt-scale', 'scale', 'value')
   bind('opt-brightness', 'brightness', 'value')
