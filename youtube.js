@@ -67,7 +67,27 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     5: 'Trình phát không hỗ trợ nội dung này',
     100: 'Video không tồn tại hoặc đã bị gỡ',
     101: 'Video này không cho phép nhúng',
-    150: 'Video này không cho phép nhúng'
+    150: 'Video này không cho phép nhúng',
+    // 153 khong co trong tai lieu YouTube. Thuc te no bao "player configuration
+    // error": video bi chan phat ngoai youtube.com — hay gap voi MV co ban quyen
+    // am nhac hoac video gioi han do tuoi (doi dang nhap).
+    153: 'Video này chỉ xem được trên YouTube (bản quyền âm nhạc hoặc giới hạn tuổi)'
+  }
+
+  // Nhung khong duoc thi it ra cho nguoi dung duong ra.
+  function linkGoc(parsed) {
+    if (parsed.videoId) return 'https://www.youtube.com/watch?v=' + parsed.videoId
+    return 'https://www.youtube.com/playlist?list=' + parsed.listId
+  }
+
+  function baoLoi(text, parsed) {
+    status.textContent = text + ' — '
+    const a = document.createElement('a')
+    a.href = linkGoc(parsed)
+    a.target = '_blank'
+    a.rel = 'noopener'
+    a.textContent = 'mở trên YouTube'
+    status.appendChild(a)
   }
 
   // YT.Player thay the phan tu dich bang <iframe>, va destroy() xoa luon iframe do
@@ -103,7 +123,7 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     // no khong chay, va status se ket o "Dang tai..." vinh vien.
     clearTimeout(hetGio)
     hetGio = setTimeout(() => {
-      if (status.textContent === 'Đang tải…') status.textContent = 'Không tải được — kiểm tra lại link'
+      if (status.textContent === 'Đang tải…') baoLoi('Không tải được', parsed)
     }, 10000)
 
     const cfg = {
@@ -117,9 +137,9 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
         onError: e => {
           clearTimeout(hetGio)
           const chiPlaylist = parsed.listId && !parsed.videoId
-          status.textContent = chiPlaylist
+          baoLoi(chiPlaylist
             ? 'Playlist không phát được (riêng tư, không tồn tại, hoặc chặn nhúng)'
-            : (LOI[e.data] || 'Không phát được (mã ' + e.data + ')')
+            : (LOI[e.data] || 'Không phát được (mã ' + e.data + ')'), parsed)
         }
       }
     }
