@@ -17,6 +17,26 @@ reo trễ — đây là giới hạn chung của mọi bộ đếm giờ chạy 
 
 ## Nhạc nền
 
+Hai nguồn, dùng cái nào cũng được — phát cái này thì cái kia tự dừng.
+
+### YouTube
+
+Dán link video hoặc playlist vào ô trong panel rồi bấm **Phát**. Nhận được cả
+`youtube.com/watch?v=`, `youtu.be/`, `/playlist?list=`, `/shorts/`, link
+`music.youtube.com`, và ID trần.
+
+Một ô video nhỏ hiện ở góc trái dưới khi đang phát. **Không giấu được** — điều
+khoản YouTube cấm tách riêng phần tiếng, và IFrame API đòi khung player không bị
+che. Bấm ✕ trên ô đó để dừng.
+
+Script YouTube chỉ được tải khi bạn thực sự dán link. Không đụng tới thì trang
+không gọi ra ngoài lần nào và vẫn chạy khi mất mạng.
+
+Video hoặc playlist mà chủ sở hữu chặn nhúng thì sẽ không phát được — panel báo
+lý do, nhưng không có cách nào lách.
+
+### File trong máy
+
 Bấm **🎵 Chọn nhạc** trong panel rồi chọn file từ máy. Chọn được nhiều file một
 lúc. File không đi đâu cả — trình duyệt phát thẳng từ máy bạn, không upload lên
 server nào, kể cả khi bạn đang mở bản chạy trên web.

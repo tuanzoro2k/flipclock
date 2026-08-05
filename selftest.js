@@ -153,4 +153,50 @@ test('set roi get lai ra dung gia tri', () => {
   assert.strictEqual(store.get('showDate'), true)
 })
 
+const { parseYouTube } = require('./youtube.js')
+
+test('parseYouTube doc duoc watch?v=', () => {
+  assert.deepStrictEqual(parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
+    { videoId: 'dQw4w9WgXcQ', listId: null })
+})
+
+test('parseYouTube doc duoc youtu.be rut gon', () => {
+  assert.deepStrictEqual(parseYouTube('https://youtu.be/dQw4w9WgXcQ?t=42'),
+    { videoId: 'dQw4w9WgXcQ', listId: null })
+})
+
+test('parseYouTube doc duoc playlist thuan', () => {
+  assert.deepStrictEqual(parseYouTube('https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI'),
+    { videoId: null, listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI' })
+})
+
+test('parseYouTube giu ca video lan playlist khi link co ca hai', () => {
+  assert.deepStrictEqual(parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI'),
+    { videoId: 'dQw4w9WgXcQ', listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI' })
+})
+
+test('parseYouTube nhan shorts, embed, music.youtube va ID tran', () => {
+  const mong = { videoId: 'dQw4w9WgXcQ', listId: null }
+  assert.deepStrictEqual(parseYouTube('https://www.youtube.com/shorts/dQw4w9WgXcQ'), mong)
+  assert.deepStrictEqual(parseYouTube('https://www.youtube.com/embed/dQw4w9WgXcQ'), mong)
+  assert.deepStrictEqual(parseYouTube('https://music.youtube.com/watch?v=dQw4w9WgXcQ'), mong)
+  assert.deepStrictEqual(parseYouTube('dQw4w9WgXcQ'), mong)
+})
+
+test('parseYouTube chap nhan link thieu https', () => {
+  assert.deepStrictEqual(parseYouTube('  youtube.com/watch?v=dQw4w9WgXcQ  '),
+    { videoId: 'dQw4w9WgXcQ', listId: null })
+})
+
+test('parseYouTube tra null voi thu khong phai YouTube', () => {
+  assert.strictEqual(parseYouTube(''), null)
+  assert.strictEqual(parseYouTube(null), null)
+  assert.strictEqual(parseYouTube('xin chao'), null)
+  assert.strictEqual(parseYouTube('https://vimeo.com/123456'), null)
+  // ten mien gia mao co chua chuoi youtube.com
+  assert.strictEqual(parseYouTube('https://youtube.com.evil.tld/watch?v=dQw4w9WgXcQ'), null)
+  // dung mien nhung khong co video lan playlist
+  assert.strictEqual(parseYouTube('https://www.youtube.com/feed/subscriptions'), null)
+})
+
 console.log(`\n${passed} passed`)

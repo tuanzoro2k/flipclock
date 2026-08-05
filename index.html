@@ -93,6 +93,20 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
 #music-box { display: flex; gap: 6px; align-items: center; }
 #music-box [hidden] { display: none; }
 #mu-pick-label { cursor: pointer; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.15); }
+#yt-form { display: flex; gap: 6px; align-items: center; }
+#yt-url { width: 200px; }
+#yt-status { font-size: 12px; opacity: .85; max-width: 200px; }
+#yt-box {
+  position: fixed; left: 16px; bottom: 16px; z-index: 150;
+  border-radius: 8px; overflow: hidden; line-height: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,.6);
+}
+#yt-box[hidden] { display: none; }
+#yt-close {
+  position: absolute; top: 4px; right: 4px; z-index: 1;
+  border: 0; border-radius: 4px; cursor: pointer; line-height: 1;
+  padding: 2px 6px; background: rgba(0,0,0,.65); color: #fff;
+}
 </style>
 </head>
 <body>
@@ -140,12 +154,26 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
       <button id="mu-del" title="Xóa bài đang chọn khỏi danh sách" hidden>✕</button>
       <input type="range" id="mu-vol" min="0" max="100" value="50" hidden>
     </span>
+    <span class="sep"></span>
+    <span id="yt-form">
+      <input type="text" id="yt-url" placeholder="Dán link YouTube / playlist" size="26">
+      <button id="yt-go">Phát</button>
+      <span id="yt-status"></span>
+    </span>
+  </div>
+
+  <!-- Dieu khoan YouTube cam tach rieng phan tieng, va IFrame API doi khung
+       player khong bi che — nen o nay hien khi dang phat chu khong an di. -->
+  <div id="yt-box" hidden>
+    <div id="yt-player"></div>
+    <button id="yt-close" title="Dừng và đóng">✕</button>
   </div>
 
   <script src="music/tracks.js"></script>
   <script src="clock.js"></script>
   <script src="timer.js"></script>
   <script src="audio.js"></script>
+  <script src="youtube.js"></script>
   <script src="settings.js"></script>
   <script src="timer-ui.js"></script>
 </body>
