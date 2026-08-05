@@ -25,9 +25,12 @@ Dán link video hoặc playlist vào ô trong panel rồi bấm **Phát**. Nhậ
 `youtube.com/watch?v=`, `youtu.be/`, `/playlist?list=`, `/shorts/`, link
 `music.youtube.com`, và ID trần.
 
-Một ô video nhỏ hiện ở góc trái dưới khi đang phát. **Không giấu được** — điều
-khoản YouTube cấm tách riêng phần tiếng, và IFrame API đòi khung player không bị
-che. Bấm ✕ trên ô đó để dừng.
+Một ô video nhỏ hiện ở góc trái dưới khi đang phát. Nút **–** thu nó lại còn
+112×63, bấm lại để phóng ra; nút **✕** dừng hẳn và đóng.
+
+**Không có nút giấu hẳn.** Điều khoản YouTube cấm tách riêng phần tiếng, và
+IFrame API đòi khung player không bị che — giấu player mà vẫn phát nhạc chính là
+cái đó. Thu nhỏ là mức gần nhất còn hợp lệ.
 
 Script YouTube chỉ được tải khi bạn thực sự dán link. Không đụng tới thì trang
 không gọi ra ngoài lần nào và vẫn chạy khi mất mạng.

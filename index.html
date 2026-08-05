@@ -103,11 +103,20 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
   box-shadow: 0 4px 16px rgba(0,0,0,.6);
 }
 #yt-box[hidden] { display: none; }
-#yt-close {
-  position: absolute; top: 4px; right: 4px; z-index: 1;
+#yt-close, #yt-min {
+  position: absolute; top: 4px; z-index: 1;
   border: 0; border-radius: 4px; cursor: pointer; line-height: 1;
   padding: 2px 6px; background: rgba(0,0,0,.65); color: #fff;
 }
+#yt-close { right: 4px; }
+#yt-min { right: 32px; }
+/* Thu nho chu khong an: khung player van hien, chi bot chiem cho. */
+#yt-box.thu-nho iframe { width: 112px; height: 63px; }
+#yt-box.thu-nho #yt-close, #yt-box.thu-nho #yt-min {
+  padding: 0 4px; font-size: 11px; top: 2px;
+}
+#yt-box.thu-nho #yt-close { right: 2px; }
+#yt-box.thu-nho #yt-min { right: 20px; }
 </style>
 </head>
 <body>
@@ -167,6 +176,7 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
        player khong bi che — nen o nay hien khi dang phat chu khong an di. -->
   <div id="yt-box" hidden>
     <div id="yt-player"></div>
+    <button id="yt-min" title="Thu nhỏ / phóng lại">–</button>
     <button id="yt-close" title="Dừng và đóng">✕</button>
   </div>
 

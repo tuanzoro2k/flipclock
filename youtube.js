@@ -189,4 +189,9 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     if (e.key === 'Enter') { e.preventDefault(); $('yt-go').click() }
   })
   $('yt-close').addEventListener('click', stop)
+  $('yt-min').addEventListener('click', () => {
+    const nho = box.classList.toggle('thu-nho')
+    $('yt-min').textContent = nho ? '+' : '–'
+    $('yt-min').title = nho ? 'Phóng lại' : 'Thu nhỏ'
+  })
 })
