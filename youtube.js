@@ -114,7 +114,7 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
       status.textContent = 'Không tải được YouTube (chặn mạng?)'
       return
     }
-    window.stopLocalMusic?.()
+    window.stopLocalMusic && window.stopLocalMusic()
     box.hidden = false
     // Nut chuyen bai chi hien khi that su co playlist de chuyen.
     const coHangDoi = Boolean(parsed.listId)
@@ -215,8 +215,8 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   })
   // Chi co nghia khi dang phat mot playlist that: player tu quan ly hang doi.
   // Voi mot video don le thi YouTube khong co "bai ke tiep" nao de nhay toi.
-  $('yt-next').addEventListener('click', () => { try { player?.nextVideo() } catch (e) {} })
-  $('yt-prev').addEventListener('click', () => { try { player?.previousVideo() } catch (e) {} })
+  $('yt-next').addEventListener('click', () => { try { player && player.nextVideo() } catch (e) {} })
+  $('yt-prev').addEventListener('click', () => { try { player && player.previousVideo() } catch (e) {} })
 
   $('yt-close').addEventListener('click', stop)
   $('yt-min').addEventListener('click', () => {

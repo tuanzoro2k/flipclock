@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="vi">
+<!-- data-theme phai co san trong markup: toan bo mau nam trong CSS variables gan
+     vao :root[data-theme=...]. Neu doi JS gan thi truoc do (hoac khi JS chet)
+     moi bien khong phan giai duoc -> nen den, chu den tren den, man hinh cam. -->
+<html lang="vi" data-theme="classic">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -80,6 +83,12 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
 #panel label { display: flex; gap: 6px; align-items: center; }
 #panel input[type=range] { width: 90px; }
 #panel label[hidden] { display: none; }
+#loi {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  padding: 10px 12px; background: #7a1520; color: #fff;
+  font: 400 13px/1.45 system-ui, monospace; white-space: pre-wrap; word-break: break-word;
+}
+#loi[hidden] { display: none; }
 #panel .sep { width: 1px; height: 20px; background: rgba(255,255,255,.3); }
 #panel input[type=number] { width: 52px; }
 #panel button { padding: 5px 12px; border: 0; border-radius: 6px; cursor: pointer; }
@@ -133,6 +142,19 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
 </style>
 </head>
 <body>
+  <div id="loi" hidden></div>
+  <script>
+    // Phai la script dau tien: bat ca loi cu phap cua cac file nap sau. Man hinh
+    // den cam la trang thai khong the chan doan — thoi ma bat loi ra man hinh.
+    window.addEventListener('error', function (e) {
+      var d = document.getElementById('loi')
+      if (!d) return
+      d.hidden = false
+      d.textContent = 'Lỗi: ' + (e.message || e) +
+        (e.filename ? '\n' + e.filename.split('/').pop() + ':' + e.lineno : '')
+    })
+  </script>
+
   <div id="stage">
     <div id="cards"></div>
     <div id="date" hidden></div>

@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ringTimer = null
     alarming = false
     document.body.classList.remove('alarming')
-    window.stopChime?.()
+    window.stopChime && window.stopChime()
   }
 
   function readSpec(mode) {
@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function fire() {
     alarming = true
     document.body.classList.add('alarming')
-    window.playChime?.()
+    window.playChime && window.playChime()
     // Keu RING_MS roi tu tat va sang phase ke tiep, khong can bam gi.
     // Bam Escape/Space/click van tat som duoc.
     ringTimer = setTimeout(dismiss, RING_MS)

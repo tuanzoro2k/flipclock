@@ -77,7 +77,7 @@ window.addEventListener('DOMContentLoaded', () => {
     select.value = index
     document.getElementById('mu-play').title = ''
     audio.src = tracks[index].src
-    if (autoplay) { window.stopYouTube?.(); audio.play().then(syncPlayButton, syncPlayButton) }
+    if (autoplay) { window.stopYouTube && window.stopYouTube(); audio.play().then(syncPlayButton, syncPlayButton) }
   }
 
   // File thieu hoac sai ten (loi thuong gap nhat lan dau) -> im lang theo dung
@@ -124,14 +124,14 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mu-play').addEventListener('click', () => {
     // Trinh duyet chan autoplay: lan dau bat buoc phai co cu bam nay.
     // Hai nguon nhac khong duoc chong tieng nhau.
-    if (audio.paused) { window.stopYouTube?.(); audio.play().then(syncPlayButton, syncPlayButton) }
+    if (audio.paused) { window.stopYouTube && window.stopYouTube(); audio.play().then(syncPlayButton, syncPlayButton) }
     else audio.pause()
   })
   document.getElementById('mu-next').addEventListener('click', () => load(index + 1, true))
   select.addEventListener('change', () => load(Number(select.value), true))
   document.getElementById('mu-vol').addEventListener('input', e => {
     audio.volume = e.target.value / 100
-    window.setYouTubeVolume?.(Number(e.target.value))
+    window.setYouTubeVolume && window.setYouTubeVolume(Number(e.target.value))
   })
   audio.addEventListener('ended', () => load(index + 1, true))
   audio.addEventListener('play', () => { document.getElementById('mu-play').textContent = '❚❚' })
