@@ -78,7 +78,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (session.mode === 'alarm') {
       return `⏰ ${$('tm-at').value}`
     }
-    return '● ĐẾM NGƯỢC'
+    // Dem nguoc khong can nhan: o lat da hien so dem roi. Pomodoro va hen gio
+    // thi can, vi chung noi thu ma o lat khong noi (dang o phase nao / hen luc may).
+    return ''
   }
 
   // Alarm KHONG chiem o lat — o lat van hien gio that.
@@ -91,16 +93,19 @@ window.addEventListener('DOMContentLoaded', () => {
     return text.split(':')
   }
 
+  // Ghep bang filter+join thay vi noi chuoi: nhan co the rong (dem nguoc), noi
+  // thang se de lai dau ' · ' lo lung o dau dong.
   function tick() {
     if (!session || alarming) return
-    const now = Date.now()
-    if (remaining(session.endAt, now) > 0) {
-      const left = session.mode === 'alarm' ? ` · còn ${formatDuration(remaining(session.endAt, now))}` : ''
-      status.textContent = label() + left
+    const con = remaining(session.endAt, Date.now())
+    if (con > 0) {
+      const phan = [label()]
+      if (session.mode === 'alarm') phan.push('còn ' + formatDuration(con))
+      status.textContent = phan.filter(Boolean).join(' · ')
       return
     }
     fire()
-    status.textContent = label() + ' · HẾT GIỜ'
+    status.textContent = [label(), 'HẾT GIỜ'].filter(Boolean).join(' · ')
   }
 
   function dismiss() {
