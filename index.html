@@ -20,13 +20,34 @@
   --card-h: calc(var(--fs) * 4 / 3);
   --gap: calc(var(--fs) * 0.08);
 }
+/* Bang dieu khien co bo token rieng (--ui-*) tach khoi token cua dong ho.
+   Mau nhan la mau bong den bang lat: ho phach cho Classic, xanh lan cho Hacker.
+   Xam khong bao gio la xam thuan — luon nga rat nhe ve phia mau nhan. */
 :root[data-theme="classic"] {
   --bg: #000; --card: #1a1a1a; --card2: #141414;
   --digit: #ccc; --label: #888; --glow: none; --line: #000;
+
+  --ui-bg: rgba(16,16,18,.94);
+  --ui-line: rgba(255,255,255,.09);
+  --ui-well: rgba(255,255,255,.055);
+  --ui-well-hi: rgba(255,255,255,.1);
+  --ui-text: #e6e6e9;
+  --ui-dim: #83838d;
+  --ui-accent: #d79a3f;
+  --ui-on-accent: #17130c;
 }
 :root[data-theme="hacker"] {
   --bg: #000; --card: #001a00; --card2: #001200;
   --digit: #00ff41; --label: #00a02a; --glow: 0 0 12px #00ff41; --line: #000;
+
+  --ui-bg: rgba(4,14,6,.94);
+  --ui-line: rgba(0,255,65,.16);
+  --ui-well: rgba(0,255,65,.07);
+  --ui-well-hi: rgba(0,255,65,.13);
+  --ui-text: #c8f7d4;
+  --ui-dim: #4f9a63;
+  --ui-accent: #00ff41;
+  --ui-on-accent: #04140a;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
 body {
@@ -71,27 +92,126 @@ body {
   color: var(--label); text-shadow: var(--glow); letter-spacing: .06em;
 }
 #date[hidden] { display: none; }
+/* ---- Bang dieu khien -------------------------------------------------- */
 #panel {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
-  max-width: 92vw; padding: 10px 16px; border-radius: 12px;
-  background: rgba(128,128,128,.22); backdrop-filter: blur(10px);
-  color: #fff; font: 400 13px/1 system-ui, sans-serif; z-index: 100;
-  transition: opacity .2s, visibility .2s;
+  display: flex; align-items: stretch; gap: 0; flex-wrap: wrap;
+  /* max-content: khong co no thi thuat toan shrink-to-fit cua flex-wrap tu ep
+     hep lai va day nhom thu ba xuong dong du con thua cho. */
+  width: max-content; max-width: 94vw; padding: 4px; border-radius: 14px;
+  background: var(--ui-bg); border: 1px solid var(--ui-line);
+  box-shadow: 0 18px 44px rgba(0,0,0,.55);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  color: var(--ui-text); z-index: 100;
+  font: 400 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: opacity .18s ease, visibility .18s ease;
 }
 body:not(.hover) #panel { opacity: 0; visibility: hidden; }
-#panel label { display: flex; gap: 6px; align-items: center; }
-#panel input[type=range] { width: 90px; }
-#panel label[hidden] { display: none; }
+
+/* Moi nhom la mot linh vuc chuc nang that, khong phai vach cho dep:
+   thu nhin thay / bo dem gio / thu nghe thay. */
+.grp {
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 10px 16px; min-width: 0;
+}
+.grp + .grp { border-left: 1px solid var(--ui-line); }
+.grp-head {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--ui-dim); font-weight: 600;
+}
+.grp-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+#panel label { display: inline-flex; gap: 7px; align-items: center; white-space: nowrap; }
+#panel .cap { color: var(--ui-dim); font-size: 12px; }
+/* Do dac hieu (1,1,0) nen thang cac quy tac display:flex ben duoi. */
+#panel [hidden] { display: none; }
+
+/* ---- Cac o dieu khien: bo mac dinh cua trinh duyet ---------------------- */
+#panel input[type=checkbox] {
+  appearance: none; -webkit-appearance: none;
+  width: 17px; height: 17px; border-radius: 5px; cursor: pointer;
+  border: 1px solid var(--ui-line); background: var(--ui-well);
+  display: grid; place-content: center; transition: background .12s, border-color .12s;
+}
+#panel input[type=checkbox]::after {
+  content: ''; width: 9px; height: 9px; border-radius: 2px;
+  transform: scale(0); transition: transform .12s ease;
+  box-shadow: inset 0 0 0 9px var(--ui-on-accent);
+}
+#panel input[type=checkbox]:checked {
+  background: var(--ui-accent); border-color: var(--ui-accent);
+}
+#panel input[type=checkbox]:checked::after { transform: scale(1); }
+
+#panel select,
+#panel input[type=number],
+#panel input[type=text] {
+  appearance: none; -webkit-appearance: none;
+  height: 28px; padding: 0 9px; border-radius: 7px;
+  background: var(--ui-well); border: 1px solid var(--ui-line);
+  color: var(--ui-text); font: inherit; cursor: pointer;
+}
+#panel input[type=number], #panel input[type=text] {
+  cursor: text; font-variant-numeric: tabular-nums;
+}
+#panel select {
+  padding-right: 26px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2383838d' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center;
+}
+#panel select option { background: #17171a; color: #e6e6e9; }
+#panel input[type=number] { width: 56px; text-align: center; }
+#panel input::placeholder { color: var(--ui-dim); }
+
+#panel input[type=range] {
+  appearance: none; -webkit-appearance: none;
+  width: 92px; height: 18px; background: none; cursor: pointer;
+}
+#panel input[type=range]::-webkit-slider-runnable-track {
+  height: 3px; border-radius: 2px; background: var(--ui-well-hi);
+}
+#panel input[type=range]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 13px; height: 13px; margin-top: -5px; border-radius: 50%;
+  background: var(--ui-accent); border: 0;
+}
+#panel input[type=range]::-moz-range-track {
+  height: 3px; border-radius: 2px; background: var(--ui-well-hi);
+}
+#panel input[type=range]::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--ui-accent); border: 0;
+}
+
+#panel button, #mu-pick-label {
+  height: 28px; padding: 0 12px; border-radius: 7px; cursor: pointer;
+  background: var(--ui-well); border: 1px solid var(--ui-line);
+  color: var(--ui-text); font: inherit; display: inline-flex;
+  align-items: center; justify-content: center; white-space: nowrap;
+  transition: background .12s;
+}
+#panel button:hover, #mu-pick-label:hover { background: var(--ui-well-hi); }
+/* Chi mot hanh dong chinh moi nhom duoc mang mau nhan.
+   Phai la #panel #tm-start (2,0,0): #panel button o tren la (1,0,1), viet
+   #tm-start (1,0,0) thi bi de mat va nut ra mau xam nhu moi nut khac. */
+#panel #tm-start, #panel #yt-go {
+  background: var(--ui-accent); border-color: var(--ui-accent);
+  color: var(--ui-on-accent); font-weight: 600;
+}
+#panel #tm-start:hover, #panel #yt-go:hover { filter: brightness(1.08); }
+
+#panel :focus-visible {
+  outline: 2px solid var(--ui-accent); outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  #panel, #panel * { transition: none !important; }
+}
 #loi {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
   padding: 10px 12px; background: #7a1520; color: #fff;
   font: 400 13px/1.45 system-ui, monospace; white-space: pre-wrap; word-break: break-word;
 }
 #loi[hidden] { display: none; }
-#panel .sep { width: 1px; height: 20px; background: rgba(255,255,255,.3); }
-#panel input[type=number] { width: 52px; }
-#panel button { padding: 5px 12px; border: 0; border-radius: 6px; cursor: pointer; }
 #tm-status {
   margin-top: 16px; text-align: center; font-size: 26px;
   color: var(--label); text-shadow: var(--glow); letter-spacing: .08em;
@@ -99,13 +219,11 @@ body:not(.hover) #panel { opacity: 0; visibility: hidden; }
 #tm-status:empty { display: none; }
 body.alarming #cards { animation: blink .6s steps(1) infinite; }
 @keyframes blink { 50% { opacity: .3; } }
-#music-box { display: flex; gap: 6px; align-items: center; }
-#music-box [hidden] { display: none; }
-#mu-pick-label { cursor: pointer; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.15); }
-#yt-form, #vol-box { display: flex; gap: 6px; align-items: center; }
-#yt-url { width: 200px; }
-#yt-status { font-size: 12px; opacity: .85; max-width: 320px; }
-#yt-status a { color: #6cf; text-decoration: underline; }
+#music-box, #yt-form, #vol-box { display: flex; gap: 7px; align-items: center; }
+#yt-url { width: 210px; }
+#yt-status { font-size: 12px; color: var(--ui-dim); max-width: 240px; line-height: 1.35; }
+#yt-status a { color: var(--ui-accent); text-decoration: underline; }
+#yt-status:empty { display: none; }
 #yt-box {
   position: fixed; left: 16px; bottom: 16px; z-index: 150;
   border-radius: 8px; overflow: hidden; line-height: 0;
@@ -123,12 +241,16 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
 /* Man hinh hep: panel xep chong lai rat cao nen phai cuon duoc, khong thi phan
    tren tran ra ngoai man hinh va khong the voi toi. Player doi len tren de
    khong de len panel. */
-@media (max-width: 700px) {
+@media (max-width: 780px) {
   #panel {
-    bottom: 8px; max-width: 96vw; gap: 10px 12px;
+    bottom: 8px; max-width: 96vw; flex-direction: column; padding: 2px;
     max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
   }
-  #yt-url { width: 130px; }
+  /* Xep doc thi vach ngan phai nam ngang, khong thi no ke doc giua khong khi. */
+  .grp { padding: 10px 14px; }
+  .grp + .grp { border-left: 0; border-top: 1px solid var(--ui-line); }
+  #yt-url { width: 100%; min-width: 150px; }
+  #yt-form { flex: 1; flex-wrap: wrap; }
   #yt-status { max-width: 100%; }
   #yt-box { top: 12px; bottom: auto; left: 12px; }
 }
@@ -162,60 +284,74 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
   </div>
 
   <div id="panel">
-    <label><input type="checkbox" id="opt-seconds"> Giây</label>
-    <label><input type="checkbox" id="opt-date"> Ngày tháng</label>
-    <label>Theme
-      <select id="opt-theme">
-        <option value="classic">Classic</option>
-        <option value="hacker">Hacker</option>
-      </select>
-    </label>
-    <label>Cỡ <input type="range" id="opt-scale" min="50" max="100"></label>
-    <label>Sáng <input type="range" id="opt-brightness" min="50" max="100"></label>
-    <span class="sep"></span>
-    <label>Chế độ
-      <select id="tm-mode">
-        <option value="off">Tắt</option>
-        <option value="countdown">Đếm ngược</option>
-        <option value="pomodoro">Pomodoro</option>
-        <option value="alarm">Hẹn giờ</option>
-      </select>
-    </label>
-    <label id="tm-countdown-box" hidden>Phút <input type="number" id="tm-minutes" min="1" max="600" value="10"></label>
-    <!-- Khong dung <input type="time">: no hien theo locale cua TRINH DUYET
-         (tieng Viet ra "07:30 SA"), va khong the ep 24h tu phia trang — thuoc
-         tinh lang tren phan tu bi Chrome bo qua. Hai o so thi luon 24h. -->
-    <span id="tm-alarm-box" hidden>Lúc
-      <input type="number" id="tm-hh" min="0" max="23" value="7" aria-label="Giờ">
-      <b>:</b>
-      <input type="number" id="tm-mm" min="0" max="59" value="30" aria-label="Phút">
-    </span>
-    <label id="tm-pomo-box" hidden>
-      Focus <input type="number" id="tm-focus" min="1" max="180" value="25">
-      Nghỉ <input type="number" id="tm-break" min="1" max="60" value="5">
-      Chu kỳ <input type="number" id="tm-cycles" min="1" max="12" value="4">
-    </label>
-    <button id="tm-start">Bắt đầu</button>
-    <span class="sep"></span>
-    <span id="music-box">
-      <label id="mu-pick-label" for="mu-pick">🎵 Chọn nhạc</label>
-      <input type="file" id="mu-pick" accept="audio/*" multiple hidden>
-      <button id="mu-play" hidden>▶</button>
-      <button id="mu-next" hidden>▶▶</button>
-      <select id="mu-track" hidden></select>
-      <button id="mu-del" title="Xóa bài đang chọn khỏi danh sách" hidden>✕</button>
-    </span>
-    <span id="vol-box" title="Âm lượng (cả nhạc từ máy lẫn YouTube)">
-      🔊 <input type="range" id="mu-vol" min="0" max="100" value="50">
-    </span>
-    <span class="sep"></span>
-    <span id="yt-form">
-      <input type="text" id="yt-url" placeholder="Dán link YouTube / playlist" size="26">
-      <button id="yt-go">Phát</button>
-      <button id="yt-prev" title="Bài trước trong playlist" hidden>⏮</button>
-      <button id="yt-next" title="Bài kế tiếp trong playlist" hidden>⏭</button>
-      <span id="yt-status"></span>
-    </span>
+    <section class="grp">
+      <span class="grp-head">Hiển thị</span>
+      <div class="grp-row">
+        <label><input type="checkbox" id="opt-seconds"> Giây</label>
+        <label><input type="checkbox" id="opt-date"> Ngày tháng</label>
+        <select id="opt-theme" aria-label="Theme">
+          <option value="classic">Classic</option>
+          <option value="hacker">Hacker</option>
+        </select>
+      </div>
+      <div class="grp-row">
+        <label><span class="cap">Cỡ</span> <input type="range" id="opt-scale" min="50" max="100"></label>
+        <label><span class="cap">Sáng</span> <input type="range" id="opt-brightness" min="50" max="100"></label>
+      </div>
+    </section>
+
+    <section class="grp">
+      <span class="grp-head">Hẹn giờ</span>
+      <div class="grp-row">
+        <select id="tm-mode" aria-label="Chế độ hẹn giờ">
+          <option value="off">Tắt</option>
+          <option value="countdown">Đếm ngược</option>
+          <option value="pomodoro">Pomodoro</option>
+          <option value="alarm">Hẹn giờ</option>
+        </select>
+        <label id="tm-countdown-box" hidden><span class="cap">Phút</span> <input type="number" id="tm-minutes" min="1" max="600" value="10"></label>
+        <!-- Khong dung <input type="time">: no hien theo locale cua TRINH DUYET
+             (tieng Viet ra "07:30 SA"), va khong the ep 24h tu phia trang —
+             thuoc tinh lang tren phan tu bi Chrome bo qua. Hai o so thi luon 24h. -->
+        <span id="tm-alarm-box" hidden><span class="cap">Lúc</span>
+          <input type="number" id="tm-hh" min="0" max="23" value="7" aria-label="Giờ">
+          <span class="cap">:</span>
+          <input type="number" id="tm-mm" min="0" max="59" value="30" aria-label="Phút">
+        </span>
+        <span id="tm-pomo-box" hidden>
+          <label><span class="cap">Focus</span> <input type="number" id="tm-focus" min="1" max="180" value="25"></label>
+          <label><span class="cap">Nghỉ</span> <input type="number" id="tm-break" min="1" max="60" value="5"></label>
+          <label><span class="cap">Chu kỳ</span> <input type="number" id="tm-cycles" min="1" max="12" value="4"></label>
+        </span>
+        <button id="tm-start">Bắt đầu</button>
+      </div>
+    </section>
+
+    <section class="grp">
+      <span class="grp-head">Âm thanh</span>
+      <div class="grp-row">
+        <span id="music-box">
+          <label id="mu-pick-label" for="mu-pick">Chọn nhạc</label>
+          <input type="file" id="mu-pick" accept="audio/*" multiple hidden>
+          <button id="mu-play" hidden>▶</button>
+          <button id="mu-next" hidden>▶▶</button>
+          <select id="mu-track" hidden aria-label="Bài đang chọn"></select>
+          <button id="mu-del" title="Xóa bài đang chọn khỏi danh sách" hidden>✕</button>
+        </span>
+        <span id="vol-box" title="Âm lượng (cả nhạc từ máy lẫn YouTube)">
+          <span class="cap">Vol</span> <input type="range" id="mu-vol" min="0" max="100" value="50" aria-label="Âm lượng">
+        </span>
+      </div>
+      <div class="grp-row">
+        <span id="yt-form">
+          <input type="text" id="yt-url" placeholder="Dán link YouTube hoặc playlist">
+          <button id="yt-go">Phát</button>
+          <button id="yt-prev" title="Bài trước trong playlist" hidden>⏮</button>
+          <button id="yt-next" title="Bài kế tiếp trong playlist" hidden>⏭</button>
+          <span id="yt-status"></span>
+        </span>
+      </div>
+    </section>
   </div>
 
   <!-- Dieu khoan YouTube cam tach rieng phan tieng, va IFrame API doi khung
