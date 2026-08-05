@@ -110,6 +110,19 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
 }
 #yt-close { right: 4px; }
 #yt-min { right: 32px; }
+
+/* Man hinh hep: panel xep chong lai rat cao nen phai cuon duoc, khong thi phan
+   tren tran ra ngoai man hinh va khong the voi toi. Player doi len tren de
+   khong de len panel. */
+@media (max-width: 700px) {
+  #panel {
+    bottom: 8px; max-width: 96vw; gap: 10px 12px;
+    max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  #yt-url { width: 130px; }
+  #yt-status { max-width: 100%; }
+  #yt-box { top: 12px; bottom: auto; left: 12px; }
+}
 /* Thu nho chu khong an: khung player van hien, chi bot chiem cho. */
 #yt-box.thu-nho iframe { width: 112px; height: 63px; }
 #yt-box.thu-nho #yt-close, #yt-box.thu-nho #yt-min {

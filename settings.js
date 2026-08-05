@@ -116,11 +116,20 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   }
 
   let hideTimer = null
-  document.addEventListener('mousemove', () => {
+  function hienPanel(giay) {
     document.body.classList.add('hover')
     clearTimeout(hideTimer)
-    hideTimer = setTimeout(() => document.body.classList.remove('hover'), 3000)
-  })
+    hideTimer = setTimeout(() => document.body.classList.remove('hover'), giay * 1000)
+  }
+  document.addEventListener('mousemove', () => hienPanel(3))
+
+  // Man hinh cam ung khong co mousemove — khong co cai nay thi panel KHONG BAO
+  // GIO hien tren dien thoai, tuc la mat sach dieu khien. Cham vao nen de mo,
+  // va de lau hon vi cham ngon tay cham hon ray chuot.
+  document.addEventListener('touchstart', e => {
+    if (e.target.closest('#panel') || e.target.closest('#yt-box')) return
+    hienPanel(8)
+  }, { passive: true })
 
   document.addEventListener('keydown', e => {
     if (e.key === 'f' || e.key === 'F') {
