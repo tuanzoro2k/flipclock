@@ -41,11 +41,13 @@ hiện, vì không có gì để chuyển tới, và video đó hết là im.
 
 Thanh **🔊** trong panel chỉnh âm lượng cho cả nhạc từ máy lẫn YouTube.
 
-**Link Mix/Radio không dùng được.** Link có `list=RD…` (hoặc `UL…`, `LL`, `WL`)
-là danh sách YouTube tự sinh riêng cho tài khoản bạn — trình nhúng không tải
-được, để nguyên thì player báo lỗi 153. App tự bỏ phần đó ra và phát mỗi video,
-kèm dòng nhắc. Muốn nghe liên tục thì tạo playlist thường trong YouTube
-(Lưu vào → Playlist mới), link của nó bắt đầu bằng `PL`.
+**Link Mix/Radio (`list=RD…`) thì tuỳ máy.** Đó là danh sách YouTube tự sinh
+riêng cho tài khoản bạn, nên nó chạy được hay không phụ thuộc trình duyệt đó có
+đang đăng nhập YouTube hay không. App cứ thử phát cả Mix; nếu player báo lỗi
+(hay gặp là mã 153) thì tự bỏ danh sách ra và phát lại mỗi video, kèm dòng nhắc.
+
+Muốn chắc chắn có nhạc chạy liên tục trên mọi máy thì tạo playlist thường trong
+YouTube (Lưu vào → Playlist mới), link của nó bắt đầu bằng `PL`.
 
 Video hoặc playlist mà chủ sở hữu chặn nhúng thì sẽ không phát được — panel báo
 lý do, nhưng không có cách nào lách.

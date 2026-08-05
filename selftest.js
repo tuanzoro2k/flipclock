@@ -157,26 +157,26 @@ const { parseYouTube } = require('./youtube.js')
 
 test('parseYouTube doc duoc watch?v=', () => {
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
-    { videoId: 'dQw4w9WgXcQ', listId: null, mixBiBo: false })
+    { videoId: 'dQw4w9WgXcQ', listId: null })
 })
 
 test('parseYouTube doc duoc youtu.be rut gon', () => {
   assert.deepStrictEqual(parseYouTube('https://youtu.be/dQw4w9WgXcQ?t=42'),
-    { videoId: 'dQw4w9WgXcQ', listId: null, mixBiBo: false })
+    { videoId: 'dQw4w9WgXcQ', listId: null })
 })
 
 test('parseYouTube doc duoc playlist thuan', () => {
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI'),
-    { videoId: null, listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI', mixBiBo: false })
+    { videoId: null, listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI' })
 })
 
 test('parseYouTube giu ca video lan playlist khi link co ca hai', () => {
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI'),
-    { videoId: 'dQw4w9WgXcQ', listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI', mixBiBo: false })
+    { videoId: 'dQw4w9WgXcQ', listId: 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI' })
 })
 
 test('parseYouTube nhan shorts, embed, music.youtube va ID tran', () => {
-  const mong = { videoId: 'dQw4w9WgXcQ', listId: null, mixBiBo: false }
+  const mong = { videoId: 'dQw4w9WgXcQ', listId: null }
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/shorts/dQw4w9WgXcQ'), mong)
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/embed/dQw4w9WgXcQ'), mong)
   assert.deepStrictEqual(parseYouTube('https://music.youtube.com/watch?v=dQw4w9WgXcQ'), mong)
@@ -185,7 +185,7 @@ test('parseYouTube nhan shorts, embed, music.youtube va ID tran', () => {
 
 test('parseYouTube chap nhan link thieu https', () => {
   assert.deepStrictEqual(parseYouTube('  youtube.com/watch?v=dQw4w9WgXcQ  '),
-    { videoId: 'dQw4w9WgXcQ', listId: null, mixBiBo: false })
+    { videoId: 'dQw4w9WgXcQ', listId: null })
 })
 
 test('parseYouTube tra null voi thu khong phai YouTube', () => {
@@ -199,24 +199,22 @@ test('parseYouTube tra null voi thu khong phai YouTube', () => {
   assert.strictEqual(parseYouTube('https://www.youtube.com/feed/subscriptions'), null)
 })
 
-test('parseYouTube bo Mix/Radio RD.. nhung giu lai video', () => {
-  // dung link nguoi dung bao loi 153
+test('parseYouTube GIU list Mix/Radio thay vi bo di', () => {
+  // Mix co the nhung duoc neu trinh duyet dang dang nhap YouTube — khong duoc
+  // bo truoc. play() se tu bo list va phat lai neu player thuc su bao loi.
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/watch?v=oddOOD--Vaw&list=RDoddOOD--Vaw&start_radio=1'),
-    { videoId: 'oddOOD--Vaw', listId: null, mixBiBo: true })
+    { videoId: 'oddOOD--Vaw', listId: 'RDoddOOD--Vaw' })
 })
 
-test('parseYouTube bo ca UL, LL, WL vi khong nhung duoc', () => {
+test('parseYouTube giu ca UL, LL, WL', () => {
   for (const l of ['ULdQw4w9WgXcQ', 'LLdQw4w9WgXcQxx', 'WLdQw4w9WgXcQxx']) {
-    const r = parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=' + l)
-    assert.strictEqual(r.listId, null)
-    assert.strictEqual(r.mixBiBo, true)
-    assert.strictEqual(r.videoId, 'dQw4w9WgXcQ')
+    assert.strictEqual(parseYouTube('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=' + l).listId, l)
   }
 })
 
-test('parseYouTube: Mix khong kem video thi bao duoc la Mix chu khong im lang', () => {
+test('parseYouTube nhan link chi co Mix, khong kem video', () => {
   assert.deepStrictEqual(parseYouTube('https://www.youtube.com/playlist?list=RDoddOOD--Vaw'),
-    { videoId: null, listId: null, mixBiBo: true })
+    { videoId: null, listId: 'RDoddOOD--Vaw' })
 })
 
 console.log(`\n${passed} passed`)

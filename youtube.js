@@ -12,7 +12,7 @@ function parseYouTube(input) {
   const ID = /^[\w-]{11}$/
   const LIST = /^[\w-]{12,}$/
 
-  if (ID.test(s)) return { videoId: s, listId: null, mixBiBo: false }
+  if (ID.test(s)) return { videoId: s, listId: null }
 
   let u
   try {
@@ -22,16 +22,12 @@ function parseYouTube(input) {
   }
   if (!/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/.test(u.hostname)) return null
 
-  // Playlist tu sinh / rieng tu thi trinh nhung khong tai duoc:
-  //   RD.. = Mix hoac Radio (ca nhan hoa theo tai khoan)
-  //   UL.. = danh sach tam sinh ra khi bam vao mot video
-  //   LL   = video da thich, WL = xem sau — deu rieng tu
-  // De nguyen thi player bao loi 153 luc bat dau phat. Bo ra, giu lai video.
-  const KHONG_NHUNG_DUOC = /^(RD|UL|LL|WL)/
+  // Giu nguyen moi loai list, ke ca Mix/Radio (RD..). Mix nhung duoc hay khong
+  // con tuy nguoi dung co dang nhap YouTube trong trinh duyet do khong — bo no
+  // di truoc la lay mat kha nang chuyen bai cua nhung ai dung duoc.
+  // Neu that su hong thi play() se tu phat lai ma bo list ra.
   const listRaw = u.searchParams.get('list')
-  const hopLe = listRaw && LIST.test(listRaw)
-  const mixBiBo = Boolean(hopLe && KHONG_NHUNG_DUOC.test(listRaw))
-  const listId = hopLe && !mixBiBo ? listRaw : null
+  const listId = listRaw && LIST.test(listRaw) ? listRaw : null
 
   let videoId = u.searchParams.get('v')
   if (!videoId) {
@@ -43,8 +39,8 @@ function parseYouTube(input) {
   }
   if (videoId && !ID.test(videoId)) videoId = null
 
-  if (!videoId && !listId) return mixBiBo ? { videoId: null, listId: null, mixBiBo } : null
-  return { videoId: videoId || null, listId, mixBiBo }
+  if (!videoId && !listId) return null
+  return { videoId: videoId || null, listId }
 }
 
 if (typeof module !== 'undefined') module.exports = { parseYouTube }
@@ -110,10 +106,7 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     return el
   }
 
-  async function play(parsed) {
-    const ghiChu = parsed.mixBiBo
-      ? 'Mix/Radio không nhúng được nên chỉ phát 1 video. Dùng playlist thường (link có PL) để chuyển bài liên tục.'
-      : ''
+  async function play(parsed, ghiChu = '') {
     status.textContent = 'Đang tải…'
     try {
       await loadApi()
@@ -163,6 +156,14 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
         },
         onError: e => {
           clearTimeout(hetGio)
+          // Con list VA con video de phat: rat co the chinh cai list la thu
+          // khong nhung duoc (Mix/Radio, Xem sau...). Bo list ra, thu lai mot
+          // lan — van giu duoc bai hat thay vi bo cuoc.
+          if (parsed.listId && parsed.videoId) {
+            play({ videoId: parsed.videoId, listId: null },
+              'Danh sách này không nhúng được nên chỉ phát 1 video. Dùng playlist thường (link có PL) để chuyển bài liên tục.')
+            return
+          }
           const chiPlaylist = parsed.listId && !parsed.videoId
           baoLoi(chiPlaylist
             ? 'Playlist không phát được (riêng tư, không tồn tại, hoặc chặn nhúng)'
@@ -203,10 +204,10 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   $('yt-go').addEventListener('click', () => {
     const parsed = parseYouTube($('yt-url').value)
     if (!parsed) { status.textContent = 'Không nhận ra link YouTube'; return }
-    if (!parsed.videoId && !parsed.listId) {
-      status.textContent = 'Mix/Radio của YouTube không nhúng được — dùng link playlist thường'
-      return
-    }
+    // Moi lan phat deu bat dau o co binh thuong: giu trang thai thu nho khien
+    // player be ti, ma o co do YouTube an bot dieu khien cua chinh no.
+    box.classList.remove('thu-nho')
+    $('yt-min').textContent = '–'
     play(parsed)
   })
   $('yt-url').addEventListener('keydown', e => {
