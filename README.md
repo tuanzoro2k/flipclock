@@ -35,8 +35,9 @@ cái đó. Thu nhỏ là mức gần nhất còn hợp lệ.
 Script YouTube chỉ được tải khi bạn thực sự dán link. Không đụng tới thì trang
 không gọi ra ngoài lần nào và vẫn chạy khi mất mạng.
 
-Khi đang phát playlist, hai nút **⏮ ⏭** trong panel chuyển bài. Với một video lẻ
-thì chúng không hiện, vì không có gì để chuyển tới.
+Playlist tự chuyển bài khi hết, và tự quay lại đầu khi hết danh sách — cứ phát
+mãi. Hai nút **⏮ ⏭** trong panel để nhảy sớm. Với một video lẻ thì chúng không
+hiện, vì không có gì để chuyển tới, và video đó hết là im.
 
 Thanh **🔊** trong panel chỉnh âm lượng cho cả nhạc từ máy lẫn YouTube.
 

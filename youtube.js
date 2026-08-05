@@ -132,6 +132,9 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     if (parsed.listId) {
       vars.list = parsed.listId
       vars.listType = 'playlist'
+      // Playlist tu chuyen bai san; them loop de het danh sach thi quay lai dau
+      // thay vi im bat — day la nhac nen, khong ai muon no dung sau 40 phut.
+      vars.loop = 1
     }
 
     // Guard dat TRUOC khi dung player: neu constructor nem loi thi moi dong sau
