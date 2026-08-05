@@ -52,7 +52,9 @@ window.addEventListener('DOMContentLoaded', () => {
   let index = 0
 
   const select = document.getElementById('mu-track')
-  const controls = ['mu-play', 'mu-next', 'mu-track', 'mu-del', 'mu-vol']
+  // mu-vol KHONG nam trong day: am luong dieu khien ca YouTube nen phai luon
+  // hien, ke ca khi chua chon file nhac nao tu may.
+  const controls = ['mu-play', 'mu-next', 'mu-track', 'mu-del']
 
   function refillSelect() {
     select.length = 0
@@ -127,7 +129,10 @@ window.addEventListener('DOMContentLoaded', () => {
   })
   document.getElementById('mu-next').addEventListener('click', () => load(index + 1, true))
   select.addEventListener('change', () => load(Number(select.value), true))
-  document.getElementById('mu-vol').addEventListener('input', e => { audio.volume = e.target.value / 100 })
+  document.getElementById('mu-vol').addEventListener('input', e => {
+    audio.volume = e.target.value / 100
+    window.setYouTubeVolume?.(Number(e.target.value))
+  })
   audio.addEventListener('ended', () => load(index + 1, true))
   audio.addEventListener('play', () => { document.getElementById('mu-play').textContent = '❚❚' })
   audio.addEventListener('pause', () => { document.getElementById('mu-play').textContent = '▶' })

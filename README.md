@@ -35,6 +35,17 @@ cái đó. Thu nhỏ là mức gần nhất còn hợp lệ.
 Script YouTube chỉ được tải khi bạn thực sự dán link. Không đụng tới thì trang
 không gọi ra ngoài lần nào và vẫn chạy khi mất mạng.
 
+Khi đang phát playlist, hai nút **⏮ ⏭** trong panel chuyển bài. Với một video lẻ
+thì chúng không hiện, vì không có gì để chuyển tới.
+
+Thanh **🔊** trong panel chỉnh âm lượng cho cả nhạc từ máy lẫn YouTube.
+
+**Link Mix/Radio không dùng được.** Link có `list=RD…` (hoặc `UL…`, `LL`, `WL`)
+là danh sách YouTube tự sinh riêng cho tài khoản bạn — trình nhúng không tải
+được, để nguyên thì player báo lỗi 153. App tự bỏ phần đó ra và phát mỗi video,
+kèm dòng nhắc. Muốn nghe liên tục thì tạo playlist thường trong YouTube
+(Lưu vào → Playlist mới), link của nó bắt đầu bằng `PL`.
+
 Video hoặc playlist mà chủ sở hữu chặn nhúng thì sẽ không phát được — panel báo
 lý do, nhưng không có cách nào lách.
 

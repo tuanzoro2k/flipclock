@@ -111,6 +111,9 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   }
 
   async function play(parsed) {
+    const ghiChu = parsed.mixBiBo
+      ? 'Mix/Radio không nhúng được nên chỉ phát 1 video. Dùng playlist thường (link có PL) để chuyển bài liên tục.'
+      : ''
     status.textContent = 'Đang tải…'
     try {
       await loadApi()
@@ -120,6 +123,10 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     }
     window.stopLocalMusic?.()
     box.hidden = false
+    // Nut chuyen bai chi hien khi that su co playlist de chuyen.
+    const coHangDoi = Boolean(parsed.listId)
+    $('yt-next').hidden = !coHangDoi
+    $('yt-prev').hidden = !coHangDoi
 
     const vars = { autoplay: 1, playsinline: 1 }
     if (parsed.listId) {
@@ -142,7 +149,15 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
       height: 135,
       playerVars: vars,
       events: {
-        onReady: () => { clearTimeout(hetGio); status.textContent = '' },
+        onReady: () => {
+          clearTimeout(hetGio)
+          // Giu lai ghi chu (neu co) thay vi xoa trang — day dung la luc nguoi
+          // dung can biet vi sao khong co bai ke tiep.
+          status.textContent = ghiChu
+          // Player moi luon bat dau o 100 — keo ve dung muc thanh truot dang de.
+          const v = document.getElementById('mu-vol')
+          if (v) try { player.setVolume(Number(v.value)) } catch (e) {}
+        },
         onError: e => {
           clearTimeout(hetGio)
           const chiPlaylist = parsed.listId && !parsed.videoId
@@ -169,11 +184,18 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     if (player) { player.destroy(); player = null }
     box.hidden = true
     status.textContent = ''
+    $('yt-next').hidden = true
+    $('yt-prev').hidden = true
     freshTarget()
   }
 
   // audio.js goi cai nay truoc khi phat file tu may, de hai nguon khong chong tieng.
   window.stopYouTube = stop
+
+  // Thanh am luong trong panel dieu khien ca hai nguon. setVolume nhan 0-100.
+  window.setYouTubeVolume = v => {
+    if (player && player.setVolume) try { player.setVolume(v) } catch (e) {}
+  }
 
   $('yt-go').addEventListener('click', () => {
     const parsed = parseYouTube($('yt-url').value)
@@ -183,11 +205,15 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
       return
     }
     play(parsed)
-    if (parsed.mixBiBo) status.textContent = 'Đang tải… (bỏ qua Mix, chỉ phát video)'
   })
   $('yt-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); $('yt-go').click() }
   })
+  // Chi co nghia khi dang phat mot playlist that: player tu quan ly hang doi.
+  // Voi mot video don le thi YouTube khong co "bai ke tiep" nao de nhay toi.
+  $('yt-next').addEventListener('click', () => { try { player?.nextVideo() } catch (e) {} })
+  $('yt-prev').addEventListener('click', () => { try { player?.previousVideo() } catch (e) {} })
+
   $('yt-close').addEventListener('click', stop)
   $('yt-min').addEventListener('click', () => {
     const nho = box.classList.toggle('thu-nho')

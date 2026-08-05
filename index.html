@@ -93,7 +93,7 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
 #music-box { display: flex; gap: 6px; align-items: center; }
 #music-box [hidden] { display: none; }
 #mu-pick-label { cursor: pointer; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,.15); }
-#yt-form { display: flex; gap: 6px; align-items: center; }
+#yt-form, #vol-box { display: flex; gap: 6px; align-items: center; }
 #yt-url { width: 200px; }
 #yt-status { font-size: 12px; opacity: .85; max-width: 320px; }
 #yt-status a { color: #6cf; text-decoration: underline; }
@@ -162,12 +162,16 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
       <button id="mu-next" hidden>▶▶</button>
       <select id="mu-track" hidden></select>
       <button id="mu-del" title="Xóa bài đang chọn khỏi danh sách" hidden>✕</button>
-      <input type="range" id="mu-vol" min="0" max="100" value="50" hidden>
+    </span>
+    <span id="vol-box" title="Âm lượng (cả nhạc từ máy lẫn YouTube)">
+      🔊 <input type="range" id="mu-vol" min="0" max="100" value="50">
     </span>
     <span class="sep"></span>
     <span id="yt-form">
       <input type="text" id="yt-url" placeholder="Dán link YouTube / playlist" size="26">
       <button id="yt-go">Phát</button>
+      <button id="yt-prev" title="Bài trước trong playlist" hidden>⏮</button>
+      <button id="yt-next" title="Bài kế tiếp trong playlist" hidden>⏭</button>
       <span id="yt-status"></span>
     </span>
   </div>
