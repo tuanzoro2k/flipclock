@@ -12,7 +12,7 @@ function parseYouTube(input) {
   const ID = /^[\w-]{11}$/
   const LIST = /^[\w-]{12,}$/
 
-  if (ID.test(s)) return { videoId: s, listId: null }
+  if (ID.test(s)) return { videoId: s, listId: null, mixBiBo: false }
 
   let u
   try {
@@ -22,8 +22,16 @@ function parseYouTube(input) {
   }
   if (!/(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/.test(u.hostname)) return null
 
+  // Playlist tu sinh / rieng tu thi trinh nhung khong tai duoc:
+  //   RD.. = Mix hoac Radio (ca nhan hoa theo tai khoan)
+  //   UL.. = danh sach tam sinh ra khi bam vao mot video
+  //   LL   = video da thich, WL = xem sau — deu rieng tu
+  // De nguyen thi player bao loi 153 luc bat dau phat. Bo ra, giu lai video.
+  const KHONG_NHUNG_DUOC = /^(RD|UL|LL|WL)/
   const listRaw = u.searchParams.get('list')
-  const listId = listRaw && LIST.test(listRaw) ? listRaw : null
+  const hopLe = listRaw && LIST.test(listRaw)
+  const mixBiBo = Boolean(hopLe && KHONG_NHUNG_DUOC.test(listRaw))
+  const listId = hopLe && !mixBiBo ? listRaw : null
 
   let videoId = u.searchParams.get('v')
   if (!videoId) {
@@ -35,8 +43,8 @@ function parseYouTube(input) {
   }
   if (videoId && !ID.test(videoId)) videoId = null
 
-  if (!videoId && !listId) return null
-  return { videoId: videoId || null, listId }
+  if (!videoId && !listId) return mixBiBo ? { videoId: null, listId: null, mixBiBo } : null
+  return { videoId: videoId || null, listId, mixBiBo }
 }
 
 if (typeof module !== 'undefined') module.exports = { parseYouTube }
@@ -123,7 +131,8 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
     // no khong chay, va status se ket o "Dang tai..." vinh vien.
     clearTimeout(hetGio)
     hetGio = setTimeout(() => {
-      if (status.textContent === 'Đang tải…') baoLoi('Không tải được', parsed)
+      // startsWith chu khong phai so sanh bang: text co the co duoi "(bo qua Mix...)"
+      if (status.textContent.startsWith('Đang tải')) baoLoi('Không tải được', parsed)
     }, 10000)
 
     const cfg = {
@@ -169,7 +178,12 @@ if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', (
   $('yt-go').addEventListener('click', () => {
     const parsed = parseYouTube($('yt-url').value)
     if (!parsed) { status.textContent = 'Không nhận ra link YouTube'; return }
+    if (!parsed.videoId && !parsed.listId) {
+      status.textContent = 'Mix/Radio của YouTube không nhúng được — dùng link playlist thường'
+      return
+    }
     play(parsed)
+    if (parsed.mixBiBo) status.textContent = 'Đang tải… (bỏ qua Mix, chỉ phát video)'
   })
   $('yt-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); $('yt-go').click() }
