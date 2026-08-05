@@ -182,7 +182,14 @@ body.alarming #cards { animation: blink .6s steps(1) infinite; }
       </select>
     </label>
     <label id="tm-countdown-box" hidden>Phút <input type="number" id="tm-minutes" min="1" max="600" value="10"></label>
-    <label id="tm-alarm-box" hidden>Lúc <input type="time" id="tm-at" value="07:30"></label>
+    <!-- Khong dung <input type="time">: no hien theo locale cua TRINH DUYET
+         (tieng Viet ra "07:30 SA"), va khong the ep 24h tu phia trang — thuoc
+         tinh lang tren phan tu bi Chrome bo qua. Hai o so thi luon 24h. -->
+    <span id="tm-alarm-box" hidden>Lúc
+      <input type="number" id="tm-hh" min="0" max="23" value="7" aria-label="Giờ">
+      <b>:</b>
+      <input type="number" id="tm-mm" min="0" max="59" value="30" aria-label="Phút">
+    </span>
     <label id="tm-pomo-box" hidden>
       Focus <input type="number" id="tm-focus" min="1" max="180" value="25">
       Nghỉ <input type="number" id="tm-break" min="1" max="60" value="5">

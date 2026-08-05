@@ -24,8 +24,7 @@ window.addEventListener('DOMContentLoaded', () => {
       return { mode, durationMs: Number($('tm-minutes').value) * MIN }
     }
     if (mode === 'alarm') {
-      const [hh, mm] = $('tm-at').value.split(':').map(Number)
-      return { mode, hh, mm }
+      return { mode, hh: Number($('tm-hh').value), mm: Number($('tm-mm').value) }
     }
     return {
       mode: 'pomodoro',
@@ -39,7 +38,12 @@ window.addEventListener('DOMContentLoaded', () => {
   // HTML min/max chi la advisory, nguoi dung xoa trang o bat ky truong nao.
   function validSpec(spec) {
     if (spec.mode === 'countdown') return spec.durationMs > 0
-    if (spec.mode === 'alarm') return Number.isInteger(spec.hh) && Number.isInteger(spec.mm)
+    if (spec.mode === 'alarm') {
+      // Kiem ca khoang: o rong ra NaN, ma go 30 gio thi setHours() cuon sang
+      // hom sau + 6 tieng, hen nham gio ma khong bao gi.
+      return Number.isInteger(spec.hh) && spec.hh >= 0 && spec.hh <= 23 &&
+             Number.isInteger(spec.mm) && spec.mm >= 0 && spec.mm <= 59
+    }
     return spec.cycles >= 1 && spec.focusMs > 0 && spec.breakMs > 0
   }
 
@@ -76,7 +80,8 @@ window.addEventListener('DOMContentLoaded', () => {
       return `● ${name} ${session.cycle}/${session.cycles}`
     }
     if (session.mode === 'alarm') {
-      return `⏰ ${$('tm-at').value}`
+      const p = n => String(n).padStart(2, '0')
+      return `⏰ ${p(session.spec.hh)}:${p(session.spec.mm)}`
     }
     // Dem nguoc khong can nhan: o lat da hien so dem roi. Pomodoro va hen gio
     // thi can, vi chung noi thu ma o lat khong noi (dang o phase nao / hen luc may).
